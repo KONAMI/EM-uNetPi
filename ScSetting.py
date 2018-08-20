@@ -629,8 +629,7 @@ class ScSetting(ScBase):
 		super(ScSetting, self).Start()
 
 		self.currentIdx  = -1
-		#self.initialMode = 0
-		self.initialMode = 3
+		self.initialMode = 0
 
 		cmd = "diff /etc/iptables.ipv4.nat.type2 /etc/iptables.ipv4.nat"
 		try:
