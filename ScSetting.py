@@ -222,8 +222,8 @@ class ScSetting(ScBase):
 
 		# Cleanup
 		if self.currentIdx == 0:
-			self.SetTouchActive("BtApModeL", False)
-			self.SetTouchActive("BtApModeR", False)
+			self.SetTouchActive("BtApL", False)
+			self.SetTouchActive("BtApR", False)
 			self.SetTouchActive("BtChannelL", False)
 			self.SetTouchActive("BtChannelR", False)			
 		elif self.currentIdx == 1:
