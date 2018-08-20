@@ -66,7 +66,7 @@ $ sudo apt-get install libssl-dev
 
 ### Networkの設定
 
-#### /etc/network/interface.d/eth0
+#### /etc/network/interfaces.d/eth0
 
 WAN側の設定
 
@@ -77,7 +77,7 @@ iface eth0 inet dhcp
 dns-nameservers 1.1.1.1
 ```
 
-#### /etc/network/interface.d/eth1
+#### /etc/network/interfaces.d/eth1
 
 管理用/APIMode用の固定アドレス。
 
@@ -87,7 +87,7 @@ address 192.168.31.10
 netmask 255.255.255.0
 ```
 
-#### /etc/network/interface.d/eth2
+#### /etc/network/interfaces.d/eth2
 
 LAN側（有線）の設定
 
@@ -98,7 +98,7 @@ address 192.168.21.1
 netmask 255.255.255.0
 ```
 
-#### /etc/network/interface.d/wlan0
+#### /etc/network/interfaces.d/wlan0
 
 LAN側（無線）の設定
 
