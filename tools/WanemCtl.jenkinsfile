@@ -1,0 +1,33 @@
+/*==========================================================================================
+*
+* JenkinsのPipelineでテストを実行するときに、回線エミュレータを制御する際のJenkinsfileサンプル
+*
+* - WanemCtl.php は実行できるように配置/設定しておく。
+* - 必要なパラメータはPipeline定義の際に渡せるようにしておく
+*
+* ==========================================================================================*/
+
+clientLabelA       = "master"
+
+/*==========================================================================================*/
+
+echo "EM-uNetPiのパラメータ設定"
+
+node(clientLabelA){
+  timestamps {
+    stage('SetupEM-uNetPi@' + clientLabelA){
+      deleteDir() 
+      sh "php WanemCtl.php " + SetMode + " " + WanemCtlPoint + " " + bandUp + " " + bandDw + " " + delayUp + " " + delayDw + " " + lossUp + " " + lossDw + " 0 0 > Label.txt"
+      sh "mkdir SetupInfo"
+      sh "mv *.txt SetupInfo"
+      stash name: "SetupInfo"
+
+      // 設定内容は、ビルドの情報をセットする際に出力するとよい。
+      // unstash "SetupInfo"
+      // sh 'cat SetupInfo/Label.txt'
+      // currentBuild.description = readFile 'SetupInfo/Label.txt'
+    }
+  }
+}
+
+/*==========================================================================================*/

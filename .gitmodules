@@ -1,0 +1,3 @@
+[submodule "fbtft"]
+	path = fbtft
+	url = https://github.com/notro/fbtft_test.git
