@@ -38,9 +38,11 @@ class ScRemoteApi(ScBase):
 			for s in read_sockets:
 				if s == self.sock:
 					try:
-						rBuf = self.sock.recv(self.rBufSize)
+						rBuf, peer = self.sock.recvfrom(self.rBufSize)
 						self.ApplyApiCall(rBuf.decode().strip())
 						#self.pRender.UpdateSubTitle(rBuf.decode().strip())
+                                                resp = '{"status":"E_OK"}'.encode('utf-8')
+                                                self.sock.sendto(resp, peer)
 					except socket.error, v:
 						errorcode = v[0]
 						print("socket recv error. >> " + errorcode)					
