@@ -17,3 +17,10 @@ prop:
 	sudo cp misc/iptables/iptables.ipv4.nat.type3 /etc/
 	sudo cp /etc/iptables.ipv4.nat.type2 /etc/iptables.ipv4.nat
 
+#########################################################################################
+
+YAPF           ?= yapf
+PYTHON_SCRIPTS ?= ${shell ls *.py}
+
+format:
+	yapf -i ${PYTHON_SCRIPTS}
