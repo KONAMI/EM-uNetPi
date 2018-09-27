@@ -29,8 +29,8 @@ class ScInit(ScBase):
 
     def CheckHttpConnectivity(self):
         print "-------------------------------"
-        while HttpUtil.CheckConnectivity(self.pCTX.connectivityCheckUrl,
-                                         1) == False:
+        while HttpUtil.CheckConnectivity(self.pCTX.connectivityCheckUrl, 1,
+                                         self.pCTX.httpsProxy) == False:
             time.sleep(1)
         self.workerRet = 3
         print "-------------------------------"
@@ -40,7 +40,7 @@ class ScInit(ScBase):
         apiUrl = self.pCTX.infoApiUrl
         savePath = "/tmp/WanemApiInfo.json"
         print "-------------------------------"
-        while HttpUtil.Get(apiUrl, savePath, 1) == False:
+        while HttpUtil.Get(apiUrl, savePath, 1, self.pCTX.httpsProxy) == False:
             time.sleep(1)
         file = open(savePath)
         dat = json.load(file)

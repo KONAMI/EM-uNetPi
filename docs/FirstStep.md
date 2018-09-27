@@ -87,9 +87,58 @@ Setting
 その他
 --------------------------------------------------------------------------------------------------
 
+### 管理ポートからのログインについて
+
 完成イメージで動作しているものに対して、sshログインしたい場合、<br />
 デフォルトで下記のアドレス/ユーザ設定で、管理ポートからログインできます。
 
 - 管理ポートアドレス： 192.168.31.10
 - ユーザ：user
 - パスワード：password
+
+### Proxy環境での動作について
+
+起動そのものは、HTTPS Proxy を設定することで可能になります。
+
+起動時の引数として与えれば、HTTPS Proxyを使用するモードになるので、<br />
+下記、ファイルを修正した上で、再起動してください。
+
+なお、必要に応じて、配下のクライアントのProxy設定等も必要になります。
+
+#### /home/pi/.bash_profile
+
+proxyオプションを追加して、Https Proxy Server を指定する。
+
+```
+sudo python EM-uNetPi/Wanem.py -proxy <[protocol://][user@password]proxyhost[:port]>
+```
+
+#### /etc/dhcp/dhcpd.conf
+
+クライアントに広告するDNS Serverがデフォルトのままではダメな場合は、こちらのファイルも要修正。
+
+```
+subnet 192.168.20.0 netmask 255.255.255.0 {
+authoritative;
+option routers 192.168.20.1;
+option broadcast-address 192.168.20.255;
+option subnet-mask 255.255.255.0;
+option domain-name "EM-NetPi";
+option domain-name-servers <Your Primary DNS>,<Your Secondary DNS>;
+default-lease-time 600;
+max-lease-time 7200;
+range 192.168.20.101 192.168.20.254;
+}
+
+subnet 192.168.21.0 netmask 255.255.255.0 {
+authoritative;
+option routers 192.168.21.1;
+option broadcast-address 192.168.21.255;
+option subnet-mask 255.255.255.0;
+option domain-name "EM-NetPi";
+option domain-name-servers <Your Primary DNS>,<Your Secondary DNS>;
+default-lease-time 600;
+max-lease-time 7200;
+range 192.168.21.101 192.168.21.254;
+}
+```

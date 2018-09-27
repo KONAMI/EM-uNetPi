@@ -3,8 +3,12 @@ import time, sys, subprocess, random
 
 class HttpUtil:
     @staticmethod
-    def CheckConnectivity(host, retryLimit):
-        cmd = "curl -s -m 5 -o /dev/null " + host + "?" + str(random.random())
+    def CheckConnectivity(host, retryLimit, proxy=""):
+        proxyArg = ""
+        if proxy != "":
+            proxyArg = "--proxy " + proxy
+        cmd = "curl " + proxyArg + " -s -m 5 -o /dev/null " + host + "?" + str(
+            random.random())
         ret = False
         retryCnt = 0
         while ret == False:
@@ -21,8 +25,11 @@ class HttpUtil:
         return ret
 
     @staticmethod
-    def Get(url, savePath, retryLimit):
-        cmd = "curl -s -m 5 -o " + savePath + " " + url
+    def Get(url, savePath, retryLimit, proxy=""):
+        proxyArg = ""
+        if proxy != "":
+            proxyArg = "--proxy " + proxy
+        cmd = "curl " + proxyArg + " -s -m 5 -o " + savePath + " " + url
         ret = False
         retryCnt = 0
         while ret == False:

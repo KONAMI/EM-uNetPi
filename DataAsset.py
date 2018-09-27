@@ -7,7 +7,7 @@ class CTX:
         self.current = 0
         self.debug = False
         self.currentReplayData = ""
-
+        self.httpsProxy = ""
         #
         # Local Config
         #

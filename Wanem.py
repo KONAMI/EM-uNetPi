@@ -69,11 +69,18 @@ def main(argv):
         dest='initScene',
         required=False,
         help='initial scene')
+    parser.add_argument(
+        '-proxy',
+        type=str,
+        dest='proxy',
+        required=False,
+        help='https proxy setting')
     args = parser.parse_args()
     #print str(args.debug)
     #print str(args.initScene)
 
     pCTX = CTX()
+    pCTX.httpsProxy = args.proxy
     pRender = RenderManager()
     #pRender.RenderBaseFrame()
     pWanem = WanemManager(pCTX, pRender)
