@@ -246,8 +246,8 @@ class ScManualEx(ScBase):
         self.upBand = self.upBand + delta
         if self.upBand > 9999:
             self.upBand = 9999
-        if self.upBand < 32:
-            self.upBand = 32
+        if self.upBand < 16:
+            self.upBand = 16
         self.RenderParamForm(0, "", "%04d" % self.upBand, "", True)
 
     def UpdateDwBandParam(self, delta):
@@ -256,8 +256,8 @@ class ScManualEx(ScBase):
         self.dwBand = self.dwBand + delta
         if self.dwBand > 9999:
             self.dwBand = 9999
-        if self.dwBand < 32:
-            self.dwBand = 32
+        if self.dwBand < 16:
+            self.dwBand = 16
         self.RenderParamForm(1, "", "%04d" % self.dwBand, "", True)
 
     def UpdateUpDelayParam(self, delta):
