@@ -115,7 +115,7 @@ sudo python EM-uNetPi/Wanem.py -proxy <[protocol://][user@password]proxyhost[:po
 
 #### /etc/dhcp/dhcpd.conf
 
-クライアントに広告するDNS Serverがデフォルトのままではダメな場合は、こちらのファイルも要修正。
+クライアントに配布するDNS Serverがデフォルトのままではダメな場合は、こちらのファイルも要修正。
 
 ```
 subnet 192.168.20.0 netmask 255.255.255.0 {
