@@ -121,8 +121,8 @@ class ScPlayback(ScBase):
 
         if (self.datPageIdx * 3 + self.datFocusIdx) == 0 and vec == -1:
             return
-        if (self.datPageIdx * 3 + self.datFocusIdx) == (
-                self.datNr - 1) and vec == 1:
+        if (self.datPageIdx * 3 + self.datFocusIdx) == (self.datNr -
+                                                        1) and vec == 1:
             return
         if (self.datFocusIdx % 3) == 0 and vec == -1:
             self.datPageIdx -= 1
@@ -423,7 +423,7 @@ class ScPlayback(ScBase):
             self.pRender.fb.draw.rect(self.pRender.N, Rect(12, 268, 84, 16), 0)
             self.pRender.fb.putstr(12, 268, state, self.pRender.W, 2)
         if delay >= 0:
-            self.pRender.fb.draw.rect(self.pRender.N, Rect(
-                12, 268 + 24, 50, 16), 0)
+            self.pRender.fb.draw.rect(self.pRender.N,
+                                      Rect(12, 268 + 24, 50, 16), 0)
             self.pRender.fb.putstr(12, 268 + 24, "%04d" % delay,
                                    self.pRender.W, 2)

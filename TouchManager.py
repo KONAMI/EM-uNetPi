@@ -31,8 +31,8 @@ class TouchManager:
             if e.errno == 11:
                 return False
 
-        (tv_sec, tv_usec, type, code, value) = struct.unpack(
-            self.FORMAT, event)
+        (tv_sec, tv_usec, type, code,
+         value) = struct.unpack(self.FORMAT, event)
 
         if type != 0 or code != 0 or value != 0:
             #print("Event type %u, code %u, value %u at %d.%d" % (type, code, value, tv_sec, tv_usec))

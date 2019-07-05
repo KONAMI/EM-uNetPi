@@ -57,8 +57,8 @@ class ScReplay(ScBase):
 
         if (self.groupPageIdx * 5 + self.groupFocusIdx) == 0 and vec == -1:
             return
-        if (self.groupPageIdx * 5 + self.groupFocusIdx) == (
-                self.groupNr - 1) and vec == 1:
+        if (self.groupPageIdx * 5 + self.groupFocusIdx) == (self.groupNr -
+                                                            1) and vec == 1:
             return
         if (self.groupFocusIdx % 5) == 0 and vec == -1:
             self.groupPageIdx -= 1
@@ -90,10 +90,9 @@ class ScReplay(ScBase):
 
             # Render Pager
             self.pRender.fb.putstr(
-                12 + 58, 100 + 30 * 5 - 3,
-                " %d / %d" % (self.groupPageIdx + 1,
-                              math.ceil(self.groupNr / 5.0)), self.pRender.W,
-                1)
+                12 + 58, 100 + 30 * 5 - 3, " %d / %d" %
+                (self.groupPageIdx + 1, math.ceil(self.groupNr / 5.0)),
+                self.pRender.W, 1)
         else:
             # Clear
             c = self.pRender.ConvRgb(0, 0, 0)
@@ -140,8 +139,8 @@ class ScReplay(ScBase):
 
         if (self.catPageIdx * 5 + self.catFocusIdx) == 0 and vec == -1:
             return
-        if (self.catPageIdx * 5 + self.catFocusIdx) == (
-                self.catNr - 1) and vec == 1:
+        if (self.catPageIdx * 5 + self.catFocusIdx) == (self.catNr -
+                                                        1) and vec == 1:
             return
         if (self.catFocusIdx % 5) == 0 and vec == -1:
             self.catPageIdx -= 1
@@ -177,9 +176,9 @@ class ScReplay(ScBase):
 
             # Render Pager
             self.pRender.fb.putstr(
-                260, 100 + 30 * 5 - 3,
-                " %d / %d" % (self.catPageIdx + 1, math.ceil(
-                    self.catNr / 5.0)), self.pRender.W, 1)
+                260, 100 + 30 * 5 - 3, " %d / %d" %
+                (self.catPageIdx + 1, math.ceil(self.catNr / 5.0)),
+                self.pRender.W, 1)
         else:
 
             # Clear

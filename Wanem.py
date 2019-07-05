@@ -63,18 +63,16 @@ def main(argv):
         __file__)
     parser = ArgumentParser(description=desc)
     parser.add_argument('-debug', action='store_true', dest='debug')
-    parser.add_argument(
-        '-scene',
-        type=str,
-        dest='initScene',
-        required=False,
-        help='initial scene')
-    parser.add_argument(
-        '-proxy',
-        type=str,
-        dest='proxy',
-        required=False,
-        help='https proxy setting')
+    parser.add_argument('-scene',
+                        type=str,
+                        dest='initScene',
+                        required=False,
+                        help='initial scene')
+    parser.add_argument('-proxy',
+                        type=str,
+                        dest='proxy',
+                        required=False,
+                        help='https proxy setting')
     args = parser.parse_args()
     #print str(args.debug)
     #print str(args.initScene)
@@ -84,8 +82,11 @@ def main(argv):
     pRender = RenderManager()
     #pRender.RenderBaseFrame()
     pWanem = WanemManager(pCTX, pRender)
-    pSceneManager = SceneManager(
-        pCTX, pRender, pWanem, initScene=args.initScene, debug=args.debug)
+    pSceneManager = SceneManager(pCTX,
+                                 pRender,
+                                 pWanem,
+                                 initScene=args.initScene,
+                                 debug=args.debug)
     pTouch = TouchManager(pSceneManager)
 
     now = time.time()

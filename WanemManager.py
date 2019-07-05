@@ -187,9 +187,10 @@ class WanemManager:
     def Apply(self, isLabelUpdate=True):
         if isLabelUpdate == True:
             #self.pRender.UpdateTitle("Wan Emulation Mode")
-            self.pRender.UpdateSubTitle(
-                "speed:" + self.speedLabel[self.speedState] + ", delay:" +
-                self.delayLabel[self.delayState])
+            self.pRender.UpdateSubTitle("speed:" +
+                                        self.speedLabel[self.speedState] +
+                                        ", delay:" +
+                                        self.delayLabel[self.delayState])
 
         if self.disconnState == 0:
             upLossStmt = " loss %d%%" % self.lossValueDef[self.delayState]

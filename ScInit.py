@@ -163,8 +163,8 @@ class ScInit(ScBase):
         self.state = self.STATE_CHK_NETWORK
         #self.state = self.STATE_CHK_EMULATE_DAT
         #self.workerRet = 0
-        self.worker = threading.Thread(
-            target=self.CheckHttpConnectivity, args=())
+        self.worker = threading.Thread(target=self.CheckHttpConnectivity,
+                                       args=())
         #self.worker = threading.Thread(target=self.CheckWanemDat, args=())
         self.worker.start()
 
@@ -219,8 +219,8 @@ class ScInit(ScBase):
                 self.state = self.STATE_CHK_WIFI_DONGLE
                 self.worker = None
                 self.workerRet = 0
-                self.worker = threading.Thread(
-                    target=self.CheckWifiDongle, args=())
+                self.worker = threading.Thread(target=self.CheckWifiDongle,
+                                               args=())
                 self.worker.start()
             else:
                 if self.tickCnt != self.prevTickCnt:
@@ -246,8 +246,8 @@ class ScInit(ScBase):
                 self.state = self.STATE_CHK_LAN_INTERFACE
                 self.worker = None
                 self.workerRet = 0
-                self.worker = threading.Thread(
-                    target=self.CheckLanInterface, args=())
+                self.worker = threading.Thread(target=self.CheckLanInterface,
+                                               args=())
                 self.worker.start()
             else:
                 if self.tickCnt != self.prevTickCnt:

@@ -190,8 +190,8 @@ class ScSetting(ScBase):
             channelsLen = len(self.apChannelLabelsG)
         else:
             channelsLen = len(self.apChannelLabelsA)
-        self.currentChannel = (
-            self.currentChannel + vec + channelsLen) % channelsLen
+        self.currentChannel = (self.currentChannel + vec +
+                               channelsLen) % channelsLen
         c = self.pRender.N
         self.pRender.fb.draw.rect(c, Rect(166 + 175, 236, 74, 44), 0)
 
@@ -216,8 +216,8 @@ class ScSetting(ScBase):
         return
 
     def UpdateNatpMode(self, vec):
-        self.currentNaptMode = (
-            self.currentNaptMode + vec + len(self.naptModeLabels)) % 2
+        self.currentNaptMode = (self.currentNaptMode + vec +
+                                len(self.naptModeLabels)) % 2
         c = self.pRender.N
         self.pRender.fb.draw.rect(c, Rect(210, 140 + 95 + 10 - 105, 160, 24),
                                   c)
@@ -242,8 +242,8 @@ class ScSetting(ScBase):
                 print("Update Napt Mode Fail")
 
     def UpdateWanemMode(self, vec):
-        self.currentWanemMode = (
-            self.currentWanemMode + vec + len(self.wanemModeLabels)) % 2
+        self.currentWanemMode = (self.currentWanemMode + vec +
+                                 len(self.wanemModeLabels)) % 2
         c = self.pRender.N
         self.pRender.fb.draw.rect(c, Rect(210, 140 + 95 + 10 - 105, 160, 24),
                                   c)
@@ -512,8 +512,8 @@ class ScSetting(ScBase):
             block = self.currentClientTotal
             if (block % 2) == 1:
                 block += 1
-            self.currentClientIdx = (
-                self.currentClientIdx + vec + block) % block
+            self.currentClientIdx = (self.currentClientIdx + vec +
+                                     block) % block
 
         if self.currentClientIdx < self.currentClientTotal:
             info = self.dhcpClientInfo[self.currentClientIdx]
