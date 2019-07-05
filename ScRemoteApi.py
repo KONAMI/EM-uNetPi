@@ -13,6 +13,7 @@ class ScRemoteApi(ScBase):
         super(ScRemoteApi, self).__init__(pCTX, pRender, pWanem)
         self.ptDef.insert(
             0, self.CreateTocuhDef("BtMenu", 468, 29, 62, 42, self.BtHandler))
+        self.updateCnt = 60
 
     def BtHandler(self, key):
         print "BtHandler" + key
@@ -48,6 +49,10 @@ class ScRemoteApi(ScBase):
                     except socket.error, v:
                         errorcode = v[0]
                         print("socket recv error. >> " + errorcode)
+            self.updateCnt -= 1
+            if self.updateCnt <= 0:
+                self.RenderTrafficInfo(True)
+                self.updateCnt = 60
         return
 
     def ApplyApiCall(self, query):
@@ -140,6 +145,8 @@ class ScRemoteApi(ScBase):
         self.pWanem.DirectApplyEx2(self.upBand, self.dwBand, self.upDelay,
                                    self.dwDelay, self.upLoss, self.dwLoss)
 
+        self.RenderTrafficInfo()
+
         return
 
     def RenderParamOnly(self, idx, isToggle, up, down):
@@ -196,3 +203,32 @@ class ScRemoteApi(ScBase):
                                    unit, c, 1)
             self.pRender.fb.putstr(20 + 102 + 106 + 12, 86 + 22 + idx * 58,
                                    "%04d" % down, c, 2)
+
+    def RenderTrafficInfo(self, isUpdate=False):
+        tcpNr = 0
+        udpNr = 0
+        c = self.pRender.ConvRgb(0.1, 0.1, 0.9)
+        if isUpdate == False:
+            self.pRender.fb.putstr(350, 88, "NAT SESS", c, 2)
+            self.pRender.fb.putstr(350, 110, "TCP", c, 1)
+            self.pRender.fb.putstr(414, 110, "UDP", c, 1)
+        else:
+            c = self.pRender.ConvRgb(0.0, 0.0, 0.0)
+            self.pRender.fb.draw.rect(c, Rect(344, 120, 128, 18), 0)
+
+        cmd = "cat /proc/net/nf_conntrack"
+        conntrack = subprocess.check_output(
+            cmd.strip().split(" ")).splitlines()
+
+        for line in conntrack:
+            elm = map(str, line.split())
+            if elm[2] == 'tcp':
+                tcpNr += 1
+            if elm[2] == 'udp':
+                udpNr += 1
+
+        c = self.pRender.ConvRgb(0.1, 0.1, 0.9)
+        self.pRender.fb.putstr(350, 120, "%5d" % tcpNr, c, 2)
+        self.pRender.fb.putstr(414, 120, "%5d" % udpNr, c, 2)
+
+        return
