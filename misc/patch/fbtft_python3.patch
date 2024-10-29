@@ -1,0 +1,280 @@
+diff --git a/asn_test.py b/asn_test.py
+index 6db5fff..36995d5 100644
+--- a/asn_test.py
++++ b/asn_test.py
+@@ -70,7 +70,7 @@ for rotate in [0]:
+ 			mplayer_test(160, 128)
+ 
+ 
+-raw_input("Nokia 3310, move chip select :")
++input("Nokia 3310, move chip select :")
+ 
+ if get_board_revision() == 1:
+ 	P1_13 = 21
+diff --git a/fb.py b/fb.py
+index 1fa2008..baa456c 100644
+--- a/fb.py
++++ b/fb.py
+@@ -36,12 +36,12 @@ class Framebuffer(gfx.BaseGFX):
+ 		self.dev = dev
+ 		self.fbfd = os.open(dev, os.O_RDWR)
+ 		vinfo = struct.unpack("8I12I16I4I", fcntl.ioctl(self.fbfd, FBIOGET_VSCREENINFO, " "*((8+12+16+4)*4)))
+-		finfo = struct.unpack("16cL4I3HI", fcntl.ioctl(self.fbfd, FBIOGET_FSCREENINFO, " "*48))
++		finfo = struct.unpack("16cL4I3HI", fcntl.ioctl(self.fbfd, FBIOGET_FSCREENINFO, " "*52))
+ 
+-		bytes_per_pixel = (vinfo[6] + 7) / 8
++		bytes_per_pixel = (vinfo[6] + 7) // 8
+ 		screensize = vinfo[0] * vinfo[1] * bytes_per_pixel
+ 
+-		fbp = mmap.mmap(self.fbfd, screensize, flags=mmap.MAP_SHARED, prot=mmap.PROT_READ|mmap.PROT_WRITE)
++		fbp = mmap.mmap(self.fbfd, int(screensize), flags=mmap.MAP_SHARED, prot=mmap.PROT_READ|mmap.PROT_WRITE)
+ 
+ 		self.fbp = fbp
+ 		self.xres = vinfo[0]
+@@ -56,7 +56,7 @@ class Framebuffer(gfx.BaseGFX):
+ 		self.blue = gfx.Bitfield(vinfo[14], vinfo[15], vinfo[16])
+ 		self.transp = gfx.Bitfield(vinfo[17], vinfo[18], vinfo[19])
+ 		self.nonstd = vinfo[20]
+-		self.name = ''.join([x for x in finfo[0:15] if x != '\x00'])
++		self.name = b''.join([x for x in finfo[0:15] if x != '\x00'])
+ 		self.type = finfo[18]
+ 		self.visual = finfo[20]
+ 		self.line_length = finfo[24]
+@@ -98,7 +98,7 @@ class Framebuffer(gfx.BaseGFX):
+ 		"\n" + \
+ 		"Frame buffer device information:\n" + \
+ 		"    Device      : %s\n" % self.dev + \
+-		"    Name        : %s\n" % self.name + \
++		"    Name        : %s\n" % self.name.decode(encoding='utf-8') + \
+ 		"    Size        : %s\n" % self.screensize + \
+ 		"    Type        : %s\n" % type_name + \
+ 		"    Visual      : %s\n" % visual_name + \
+diff --git a/fbtft.py b/fbtft.py
+index e99fb53..04f306e 100644
+--- a/fbtft.py
++++ b/fbtft.py
+@@ -66,13 +66,13 @@ class FBTFTdevice:
+ 		self.autoload = autoload
+ 		if not devname: devname = name
+ 		self.devname = devname
+-		cmd = ["modprobe", "--first-time", "fbtft_device", "name=%s" % devname] + ["%s=%s" %(k,v) for k,v in dev.iteritems()]
++		cmd = ["modprobe", "--first-time", "fbtft_device", "name=%s" % devname] + ["%s=%s" %(k,v) for k,v in dev.items()]
+ 		print("\n")
+-		print " ".join(cmd)
++		print(" ".join(cmd))
+ 		sudocall(cmd)
+ 		if not self.autoload:
+-			cmd = ["modprobe", self.name] + ["%s=%s" %(k,v) for k,v in drv.iteritems()]
+-			print " ".join(cmd)
++			cmd = ["modprobe", self.name] + ["%s=%s" %(k,v) for k,v in drv.items()]
++			print(" ".join(cmd))
+ 			sudocall(cmd)
+ 		time.sleep(wait)
+ 		self.fbdev = Framebuffer("/dev/fb1")
+@@ -100,13 +100,13 @@ class FBTFTdevice:
+ 
+ class ADS7846device:
+ 	def __init__(self, dev={}, drv={}):
+-		cmd = ["modprobe", "--first-time", "ads7846_device"] + ["%s=%s" %(k,v) for k,v in dev.iteritems()]
++		cmd = ["modprobe", "--first-time", "ads7846_device"] + ["%s=%s" %(k,v) for k,v in dev.items()]
+ 		print("")
+-		print " ".join(cmd)
++		print(" ".join(cmd))
+ 		sudocall(cmd)
+-		cmd = ["modprobe", "ads7846"] + ["%s=%s" %(k,v) for k,v in drv.iteritems()]
++		cmd = ["modprobe", "ads7846"] + ["%s=%s" %(k,v) for k,v in drv.items()]
+ 		print("")
+-		print " ".join(cmd)
++		print(" ".join(cmd))
+ 		sudocall(cmd)
+ 
+ 	def __enter__(self):
+@@ -126,13 +126,13 @@ class ADS7846device:
+ 
+ class GPIO_MOUSEdevice:
+ 	def __init__(self, dev={}, drv={}):
+-		cmd = ["modprobe", "--first-time", "gpio_mouse_device"] + ["%s=%s" %(k,v) for k,v in dev.iteritems()]
++		cmd = ["modprobe", "--first-time", "gpio_mouse_device"] + ["%s=%s" %(k,v) for k,v in dev.items()]
+ 		print("")
+-		print " ".join(cmd)
++		print(" ".join(cmd))
+ 		sudocall(cmd)
+-		cmd = ["modprobe", "gpio_mouse"] + ["%s=%s" %(k,v) for k,v in drv.iteritems()]
++		cmd = ["modprobe", "gpio_mouse"] + ["%s=%s" %(k,v) for k,v in drv.items()]
+ 		print("")
+-		print " ".join(cmd)
++		print(" ".join(cmd))
+ 		sudocall(cmd)
+ 
+ 	def __enter__(self):
+@@ -152,7 +152,7 @@ class GPIO_MOUSEdevice:
+ 
+ def lsmod():
+ #	if not "fbtft" in subprocess.check_output("lsmod"):
+-	print subprocess.check_output("lsmod")
++	print(subprocess.check_output("lsmod"))
+ 
+ # by BlackJack
+ def get_revision():
+@@ -184,7 +184,7 @@ def mplayer_test(x, y, playlength=6):
+ def startx_test(wait=True):
+ 	os.environ['FRAMEBUFFER'] = "/dev/fb1"
+ 	print("\nX test")
+-	print "    To end the test, click Off button in lower right corner and press Alt-l (lowercase L) to logout (if screen is too small)"
++	print("    To end the test, click Off button in lower right corner and press Alt-l (lowercase L) to logout (if screen is too small)")
+ 	if wait:
+ 		call(["startx"])
+ 		return
+@@ -230,7 +230,7 @@ def bl_pwm_test(dev):
+ 		dev.fbdev.fill(0)
+ 		c = dev.fbdev.rgb(255,0,0)
+ 		msg(dev.fbdev, "Brightness    ", c, 2)
+-		for i in range(0, max_brightness, 10) + [actual_brightness]:
++		for i in list(range(0, max_brightness, 10)) + [actual_brightness]:
+ 			msg(dev.fbdev, "           %s" % (3*chr(255)), 0, 2)
+ 			msg(dev.fbdev, "           %3d" % i, c, 2)
+ 			sudoecho(file, "%d" % i)
+diff --git a/gfx.py b/gfx.py
+index 53f70ac..c920bd2 100644
+--- a/gfx.py
++++ b/gfx.py
+@@ -26,7 +26,7 @@ class Draw:
+ 
+ 	def rect(self, color, rect, width=0):
+ 		if (width==0):
+-			for y in range(rect.top, rect.top + rect.height):
++			for y in range(int(rect.top), int(rect.top + rect.height)):
+ 				self.fb.hline(rect.left, y, rect.width, color)
+ 		else:
+ 			self.line(color, (rect.left, rect.top), (rect.left + rect.width, rect.top))
+@@ -67,7 +67,7 @@ class Draw:
+ #		print "%sx + %s = y" % (m,b)
+ 
+ 		for i in range(start_pos[0], end_pos[0]+1):
+-			print "%s,%s" % (i, int(round(m*i+b)))
++			print("%s,%s" % (i, int(round(m*i+b))))
+ 			self.fb.putpixel(i, \
+ 			int(round(m*i+b)), \
+ 			color)
+@@ -124,8 +124,8 @@ class BaseGFX:
+ 			colstr = struct.pack("H", color)
+ 			offset = ((x + self.xoffset) * self.bytes_per_pixel
+ 					+ (y + self.yoffset) * self.line_length)
+-			self.fbp.seek(offset)
+-			for i in range(0, length):
++			self.fbp.seek(int(offset))
++			for i in range(0, int(length)):
+ 				self.fbp.write(colstr)
+ 		else:
+ 			for i in range(x, x+length):
+@@ -141,9 +141,9 @@ class BaseGFX:
+ 			self.fbp.write(buf)
+ 		elif (self.bits_per_pixel == 16):
+ 			colstr = struct.pack("H", color)
+-			buf = ''
++			buf = b''
+ 			self.fbp.seek(0)
+-			for i in range(0, self.screensize/2):
++			for i in range(0, int(self.screensize/2)):
+ 				buf += colstr
+ 			self.fbp.write(buf)
+ 		else:
+diff --git a/test_fb.py b/test_fb.py
+index 41b3168..eaa2b5d 100644
+--- a/test_fb.py
++++ b/test_fb.py
+@@ -72,7 +72,7 @@ def msg(fb, s, c, max_size):
+ 
+ def show_name(fb, c):
+ 	fb.fill(0)
+-	if not msg(fb, fb.name, c, 3):
++	if not msg(fb, fb.name.decode(encoding='utf-8'), c, 3):
+ 		msg(fb, 'Test', c, 3)
+ 	pause(2)
+ 
+@@ -84,7 +84,7 @@ def show_done(fb, c):
+ 
+ 
+ def test_blank(fb, c):
+-	print "  Blanking"
++	print("  Blanking")
+ 	fb.fill(0)
+ 	msg(fb, 'Blank  ', c, 2)
+ 	pause(1)
+@@ -98,7 +98,7 @@ def test_blank(fb, c):
+ 
+ 
+ def test_border(fb, c):
+-	print "  Border"
++	print("  Border")
+ 	fb.fill(0)
+ 	fb.draw.rect(c, Rect(0, 0, fb.xres-1, fb.yres-1), 1)
+ 
+@@ -111,7 +111,7 @@ def test_border(fb, c):
+ 
+ 
+ def test_raster(fb, c):
+-	print "  Raster"
++	print("  Raster")
+ 	fb.fill(0)
+ 	for y in range(0, fb.yres, 2):
+ 		for x in range(0, fb.xres, 2):
+@@ -123,24 +123,24 @@ def test_raster(fb, c):
+ def test_rgb(fb):
+ 	if (fb.bits_per_pixel == 1):
+ 		return
+-	print "  RGB"
++	print("  RGB")
+ 	fb.fill(0)
+-	width = (fb.xres-1)/3
++	width = (fb.xres-1)//3
+ 	fb.draw.rect(fb.rgb(255,0,0), Rect(0, 0, width, fb.yres), 0)
+-	fb.putstr(5, fb.yres/2, 'RED', 0, 1)
++	fb.putstr(5, fb.yres//2, 'RED', 0, 1)
+ 
+ 	fb.draw.rect(fb.rgb(0,255,0), Rect(width, 0, width, fb.yres), 0)
+-	fb.putstr(5+width, fb.yres/2, 'GREEN', 0, 1)
++	fb.putstr(5+width, fb.yres//2, 'GREEN', 0, 1)
+ 
+ 	fb.draw.rect(fb.rgb(0,0,255), Rect(2*width, 0, width, fb.yres), 0)
+-	fb.putstr(5+2*width, fb.yres/2, 'BLUE', 0, 1)
++	fb.putstr(5+2*width, fb.yres//2, 'BLUE', 0, 1)
+ 	pause(2)
+ 
+ 
+ def test_colors(fb):
+ 	if (fb.bits_per_pixel != 16):
+ 		return
+-	print "  Colors"
++	print("  Colors")
+ 
+ 	fb.fill(0)
+ 	fb.fbp.seek(0)
+@@ -157,7 +157,7 @@ def test_colors(fb):
+ 
+ 
+ def usage():
+-	print __doc__
++	print(__doc__)
+ 
+ def main(argv):
+ 	device = '/dev/fb0'
+@@ -175,16 +175,14 @@ def main(argv):
+ 			device = arg
+ 
+ 	fb = Framebuffer(device)
+-	print fb
+-
++	print(fb)
++        
+ 	red = fb.rgb(255,0,0)
+ 	yellow = fb.rgb(255,255,0)
+ 	green = fb.rgb(0,255,0)
+ 
+ 	show_name(fb, red)
+ 
+-	print "Tests:"
+-
+ 	test_border(fb, yellow)
+ 
+ 	test_rgb(fb)
