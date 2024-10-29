@@ -1,4 +1,4 @@
-一から構築する手順
+一から構築する手順 for Raspberry Pi 5
 ==================================================================================================
 
 諸注意
@@ -7,173 +7,288 @@
 RaspberryPiとLinuxの知識がある程度あることを前提に記述をします。<br />
 不明な点等がある場合、まずは、一般的な技術文献をあたってください。
 
+また、最新版では Raspberry Pi 5 を前提にした記述になっています。
+
 Raspberry Pi の初期設定
 --------------------------------------------------------------------------------------------------
 
+### 組み立て
+
+ハードウェアのパーツを揃えたら、以下の動画にしたがって、組み立てます。
+
+#### 動画
+
+// TBD
+
+#### USBポートへの接続について
+
+今回使う Raspberry Pi OS は、USB制御（xhci）まわりに不具合があるのか、いくつかのパーツを挿すポートによっては、うまく動きません。
+
+- 有線LAN アダプタ => USB2ポート（青くないポート）
+
+- 無線LAN ドングル => USB3ポート（青いポート）
+
+に接続してください。間違えると、OS起動中にUSBデバイスのリセットループにハマって起動しません。（起動することもありますが、おそらくUSB機器が正常に認識されていないため、うまく動きません）
+
+また、電源アダプタによる出力が安定していない場合、USB機器がうまく認識されないことも確認しています（3V5Aアダプタで妥協していると起きがち）。デバイスがうまく認識されていないと疑わしい時は
+
+```bash
+$ lsusb
+```
+
+を実行して、適切に認識されているか、確認してください。
+
 ### 初期イメージ用意
 
-- 以下のバージョンの 「RASPBIAN STRETCH LITE」 のイメージファイルを [RaspberryPi公式ページ](https://www.raspberrypi.org) からダウンロードし、SDカードに焼き、本体に挿入します。
+- 以下のバージョンの 「Raspberry Pi OS Lite」 のイメージファイルを [RaspberryPi公式ページ](https://www.raspberrypi.com/software/) からダウンロードし、SDカードに焼き、本体に挿入します。
 
 #### 使用するOSのバージョン
 
-- Version:June 2018
-- Release date:2018-06-27
-- Kernel version:4.14
+- Raspberry Pi OS Lite
+
+  - Release date: July 4th 2024
+
+  - System: 64-bit
+
+  - Kernel version: 6.6
+
+  - Debian version: 12 (bookworm)
+
+  - Size: 432MB
 
 > カーネルのバージョンが異なったりすると、正常に動作しない可能性が高いので、必ず指定のバージョンを使用すること。
 
 ### OSの設定
 
+#### 初回起動
+
+昔のバージョンと違って、起動時にユーザ作成が要求されるため「pi」というユーザで作成してください（オートログインの設定を後で行うので、パスワードは任意でOK）。
+
+> 提供するイメージの pi ユーザの passwordは、以前のバージョンと同じ「raspberry」となっています。適宜変更してください。
+
+異なるユーザ名で作成した場合、スクリプトを一部書き換える必要が出てくるので、どうしても変えたい方は合わせて追加修正を行うようにしてください。
+
 #### raspi-configで設定変更
 
-デフォルトのpiユーザでログイン、下記コマンドで設定画面を呼び出し、
+ユーザ設定後、raspi-configで以下の項目を設定し再起動してください。
 
 - SSHログインを有効にする
+
 - SPIを有効にする
 - Host名を任意の名前に変更する
+- Boot オプションから Auto Login を有効にする
 
-```
+```bash
 $ sudo raspi-config
 ```
 
-#### ユーザ設定
+以後の作業はsshで行なって大丈夫です。
+
+#### 作業用ユーザ設定
 
 下記のように作業用のユーザを作成、sudo権限付与する。
 これ以降は、作成したユーザでsshログインして作業を進める。
 
-```
+```bash
 $ sudo adduser user
 $ sudo gpasswd -a user sudo
 ```
 
+> 提供するイメージの user ユーザの password は「password」になっています。適宜変更してください。
+
 #### ミドルウェア諸々追加
 
-```
+```bash
 $ sudo apt-get update
 $ sudo apt-get upgrade
 $ sudo apt-get install screen
 $ sudo apt-get install rsync
 $ sudo apt-get install git
 $ sudo apt-get install php
-$ sudo apt-get install python-dev
-$ sudo apt-get install python-pip
-$ sudo pip install --upgrade pip
-$ sudo pip install requests
+$ sudo apt-get install python-dev-is-python3
+$ sudo apt-get install python3-pip
 $ sudo apt-get install bc
 $ sudo apt-get install libnl-genl-3-dev
 $ sudo apt-get install libssl-dev
+$ sudo apt-get install conntrack 
+$ sudo apt-get install iptables
+$ sudo apt-get install iptables-persistent 
 ```
+
+iptablesのあたりで現在のルールを保存するか訊かれますが、任意で答えて問題ありません。
+
+### リポジトリからソースの取得・必要なリソース生成
+
+EM-uNetPiのリポジトリをCloneし
+
+```bash
+$ cd /home/pi
+$ git clone https://github.com/KONAMI/EM-uNetPi.git
+$ cd EM-uNetPi
+$ git submodule update --init --recursive
+$ sudo make setup
+```
+
+###  各種デバイス・ドライバのセットアップ
+
+#### タッチパネルドライバのビルド&セットアップ
+
+```bash
+$ sudo apt-get install fbi 
+$ git clone https://github.com/swkim01/waveshare-dtoverlays.git
+```
+
+リポジトリのモジュールはRaspberry Pi 5 に対応していないので、Raspberry Pi  5 環境でリビルドする必要あり
+
+```
+$ cd waveshare-dtoverlays
+$ make clean all
+$ sudo cp waveshare35a.dtbo /boot/overlays/
+```
+
+最後に
+
+/boot/firmware/config.txt の dtparam=spi=on の次あたりに
+
+```
+dtoverlay=waveshare35a:rotate=90,swapxy=1 
+```
+
+を追加して、再起動後、タッチパネルにコンソール画面が描画されていれば無事セットアップ完了です。
+
+> 同じ WaveShare の 3.5inch_RPi_LCD_(A) を組み込んだタッチパネルであっても、モノによって結線が違うことがあるので、rotateの回転角度は環境によって 90 or 270 で適宜書き換えてください。
+
+一応確認のために、
+
+```bash
+$ hexdump /dev/input/event1
+```
+
+と打った後に適当に画面をタップして、イベントが拾えているか確認を奨励。
+
+> もし、タップしてもなにも表示されない場合、event1 を event0 や event2 に変更して検証。それで拾えた場合は、リポジトリのソースをそれに合わせて修正する必要あり。
+>
+> 大体、キーボードやその他の不要なデバイスを繋ぎっぱなしが原因でズレるので、余計なものを外して再起動すると、想定通りの event1 で拾えるようになるはず。
+
+#### 無線LANアダプタのビルド&セットアップ
+
+相変わらず本体の無線LANチップが貧弱で、そのままAP化するとWANエミュレートに不都合な無線品質になるため、外部の無線LANアダプタを使います。
+
+まずは、オンボードの無線LANデバイスを無効化します。
+
+/etc/modprobe.d/raspi-blacklist.conf　に下記を追記して再起動すると無効化されます。
+
+```
+blacklist brcmfmac
+blacklist brcmutil
+```
+
+再起動後に
+
+```bash
+$ ip addr
+```
+
+と打って、wlan0のインターフェースが消えていればOK。
+
+その後、ドライバをビルドします。
+
+```
+git clone https://github.com/morrownr/rtl8852bu.git
+cd rtl8852bu
+make
+make install
+```
+
+再起動後に
+
+```bash
+$ ip addr
+```
+
+と打って、wlan0のインターフェースが現れていればOK。
 
 ### Networkの設定
 
-#### /etc/network/interfaces.d/eth0
+最新のRaspberry Pi OS では dhcpd, interface.d を使った設定からNetworkManagerを使った方式に変わっているので、従来とは大きく設定手順が異なる。
 
-WAN側の設定
+またこれに合わせて、無線APを構築する方法もhostapdを使わないものに変わっているので要注意。
 
-```
-auto eth0
-allow-hotplug eth0
-iface eth0 inet dhcp
-dns-nameservers 1.1.1.1
-```
+#### 下準備
 
-#### /etc/network/interfaces.d/eth1
+ここまでの手順をこなしていれば問題ないと思いますが、
 
-管理用/APIMode用の固定アドレス。
-
-```
-iface eth1 inet static
-address 192.168.31.10
-netmask 255.255.255.0
+```bash
+$ ip addr
 ```
 
-#### /etc/network/interfaces.d/eth2
+を実行して、eth0, eth1, eth2, wlan0 がそれぞれ認識されていることを確認しましょう。
 
-LAN側（有線）の設定
+出てこない場合、供給電力が足りていないか、接続を間違えているか、パーツが破損しています。
 
-```
-auto eth2
-iface eth2 inet static
-address 192.168.21.1
-netmask 255.255.255.0
-```
+#### connection 設定（有線）
 
-#### /etc/network/interfaces.d/wlan0
+メトリクスを明示指定しないと、意味不明な優先順番になる可能性があるので、明示指定
 
-LAN側（無線）の設定
-
-```
-allow-hotplug wlan0
-iface wlan0 inet static
-address 192.168.20.1
-netmask 255.255.255.0
+```bash
+$ sudo nmcli connection modify "Wired connection 1" ipv4.route-metric 100
+$ sudo nmcli connection modify "Wired connection 2" ipv4.route-metric 200
+$ sudo nmcli connection modify "Wired connection 3" ipv4.route-metric 300
+$ sudo nmcli connection modify "Wired connection 1" connection.autoconnect yes
+$ sudo nmcli connection modify "Wired connection 2" connection.autoconnect yes
+$ sudo nmcli connection modify "Wired connection 3" connection.autoconnect yes
 ```
 
-#### /etc/dhcpcd.conf
+LAN側のポートの設定をする
 
-末尾に追加
-
-```
-interface eth0
-noipv4
-
-interface eth1
-noipv4
-
-interface eth2
-noipv4
-
-interface wlan0
-noipv4
+```bash
+$ sudo nmcli connection modify "Wired connection 2" ipv4.addresses "192.168.20.1/24"
+$ sudo nmcli connection modify "Wired connection 2" ipv4.method manual
+$ sudo nmcli connection up "Wired connection 2"
 ```
 
-### APの設定
+管理ポートの設定をする
 
-#### 2.4GHz向けAPの準備
-
-```
-$ sudo apt-get install hostapd
-$ sudo cp /usr/sbin/hostapd /usr/local/sbin/hostapd.24
-$ sudo chmod +x /usr/local/sbin/hostapd.24
+```bash
+$ sudo nmcli connection modify "Wired connection 3" ipv4.addresses "192.168.31.67/24"
+$ sudo nmcli connection modify "Wired connection 3" ipv4.method manual
+$ sudo nmcli connection up "Wired connection 3"
 ```
 
-#### 5GHz向けAPの準備
+最後に Netowork Manager を再起動
 
-```
-$ wget https://w1.fi/releases/hostapd-2.6.tar.gz
-$ tar -zxf hostapd-2.6.tar.gz
-$ cd hostapd-2.6/hostapd
-$ cp defconfig .config
-$ echo CONFIG_LIBNL32=y >> .config
-$ make
-$ sudo mv hostapd /usr/local/sbin/hostapd.5
-$ sudo chmod +x /usr/local/sbin/hostapd.5
+```bash
+$ sudo systemctl restart NetworkManager
 ```
 
-#### 5GHz向けドングルのドライバ準備
+#### connection設定（無線）
 
-```
-$ sudo wget "https://raw.githubusercontent.com/notro/rpi-source/master/rpi-source" -O /usr/bin/rpi-source
-$ sudo chmod +x /usr/bin/rpi-source
-$ sudo rpi-source --skip-gcc
-$ git clone https://github.com/abperiasamy/rtl8812AU_8821AU_linux.git
-$ cd rtl8812AU_8821AU_linux
-```
+まず、初期設定を行います。
 
-MakefileのPlatform部分を下記のように変更
+SSID・パスワード含む細かい設定は、EM-uNetPiのメインプロセス設定後、起動時に自動上書きされるので、今は気にしなくてよいです。
 
-```
-CONFIG_PLATFORM_I386_PC = n
-CONFIG_PLATFORM_ARM_RPI = y
+```bash
+$ sudo nmcli connection add type wifi ifname wlan0 con-name rpi_ap autoconnect yes ssid wanem-xxxxxx 802-11-wireless.mode ap 802-11-wireless.band a 802-11-wireless.channel 48 ipv4.method shared ipv4.address 192.168.21.1/24 wifi-sec.key-mgmt wpa-psk wifi-sec.pairwise ccmp wifi-sec.proto rsn wifi-sec.psk "wanem-xxxxxx"
+$ sudo nmcli connection up rpi_ap
+$ sudo nmcli connection modify rpi_ap autoconnect yes
 ```
 
-そして、ビルド、インストール
+最後に Netowork Manager を再起動
 
+```bash
+$ sudo systemctl restart NetworkManager
 ```
-$ sudo make
-$ sudo make install
-$ sudo modprobe -a rtl8812au
+
+#### IPv6の切り替え（任意）
+
+IPv6を無効にしたい場合下記を実行し、再起動する。
+
+```bash
+$ cd /home/pi/EM-uNetPi/scripts/php/
+$ sudo php IPv6Switcher.php 1
 ```
+
+この切り替えは、EM-uNetPi起動後にタッチパネルからの操作（Setting）からでも行うことが出来ます。
 
 ### NAT等の設定
 
@@ -181,8 +296,9 @@ $ sudo modprobe -a rtl8812au
 
 ```
 sudo apt-get install isc-dhcp-server
-sudo update-rc.d isc-dhcp-server enable
 ```
+
+インストール後に起動にこけるが、設定ファイルを適切に構成してないせいなので、無視して良い。
 
 /etc/dhcp/dhcpd.conf の末尾に追加
 
@@ -217,7 +333,13 @@ range 192.168.21.101 192.168.21.254;
 /etc/default/isc-dhcp-server のインターフェース指定を下記のように修正
 
 ```
-INTERFACESv4="wlan0 eth2"
+INTERFACESv4="wlan0 eth1"
+```
+
+この状態で起動して問題なければOK
+
+```
+$ sudo systemctl start isc-dhcp-server.service
 ```
 
 #### forwardingの設定
@@ -226,48 +348,17 @@ INTERFACESv4="wlan0 eth2"
 
 ```
 # net.ipv4.ip_forward=1
+# net.ipv6.conf.all.forwarding=1
 ```
-
-### タッチパネルの設定
-
-```
-sudo apt-get install fbi 
-git clone https://github.com/swkim01/waveshare-dtoverlays.git
-sudo cp waveshare-dtoverlays/waveshare35a-overlay.dtb /boot/overlays/
-```
-
-さらに
-
-/boot/config.txt の dtparam=spi=on の次あたりに
-
-```
-dtoverlay=waveshare35a:rotate=90,swapxy=1 
-```
-
-を追加
 
 ### その他の設定
 
-自動ログイン設定
+#### 起動画面設定
 
-/lib/systemd/system/getty@.service の
-
-```
-ExecStart=-/sbin/agetty --noclear %I $TERM
-```
-
-を
+スプラッシュスクリーンの設定で、 /etc/rc.local の exitの手前に追加
 
 ```
-ExecStart=-/sbin/getty/ --noclear -a pi %I $TERM
-```
-
-へ変更。
-
-また、スプラッシュスクリーンの設定で、 /etc/rc.local の exitの手前に追加
-
-```
-fbi -d /dev/fb1 -T 1 -noverbose -a /home/pi/EM-uNetPi/misc/textures/Splash.jpg
+sudo fbi -d /dev/fb0 -T 1 -noverbose -a /home/pi/EM-uNetPi/misc/textures/Splash.jpg
 ```
 
 上の方の
@@ -281,22 +372,27 @@ fi
 
 はコメントアウト
 
-### 回線エミュレーターの設定
+#### 画面出力抑制（任意）
+
+タッチパネル側の描画に出てきてしまう余計な描画を抑制したい場合は /boot/firmware/cmdline.txt の rootwait の後に下記を追加。（末尾は ipv6.disable=1 or 0 のままにすること）
 
 ```
-cd /home/pi
-git clone https://github.com/KONAMI/EM-uNetPi.git
-cd EM-uNetPi
-git submodule update --init --recursive
-sudo make prop
+vt.global_cursor_default=0 quiet logo.nologo
 ```
 
-起動後に実行する処理を /home/pi/.bash_profile に追加
+### 自動ログインユーザの起動時の処理を設定
 
-```
-sudo iptables-restore < /etc/iptables.ipv4.nat
-route del -net default gw 192.168.31.1 eth1
-sudo python EM-uNetPi/Wanem.py
+~/.bash_profile を作成し、以下を記載
+
+```bash
+$ sudo nmcli connection up "Wired connection 2"
+$ sudo nmcli connection up "Wired connection 3"
+$ sudo route del -net default gw 192.168.31.1 eth2
+$ sudo iw wlan0 set power_save off
+$ sudo systemctl stop isc-dhcp-server.service
+$ sudo systemctl start isc-dhcp-server.service
+$ sudo iptables-restore < /etc/iptables.ipv4.nat
+$ sudo python EM-uNetPi/Wanem.py 1>/dev/null 2>/dev/null
 ```
 
 最後にリブートをして、タッチパネルに操作コンソールが表示されれば構築完了。
