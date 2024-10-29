@@ -38,7 +38,7 @@ class ScPlayback(ScBase):
         #self.ptDef.insert(5, self.CreateTocuhDef("BtTargetR",  430,        95,        120, 90, self.BtHandler))
 
     def BtHandler(self, key):
-        print "BtHandler" + key + " @ " + str(self.state)
+        print("BtHandler" + key + " @ " + str(self.state))
 
         if key == "BtBack":
             if self.state == self.STATE_IDLE:

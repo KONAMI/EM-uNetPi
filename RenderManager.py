@@ -15,13 +15,13 @@ class RenderManager:
         return self.fb.rgb(r, g, b)
 
     def __init__(self):
-        self.device = '/dev/fb1'
+        self.device = '/dev/fb0'
         self.xres = 480
         self.yres = 320
         self.fb = Framebuffer(self.device)
-        print self.fb
+        print(self.fb)
         self.Clear()
-        print "# %-30s [ %s ]" % ("Renderer Initialize", "OK")
+        print("# %-30s [ %s ]" % ("Renderer Initialize", "OK"))
         self.laneState = [-1, -1, -1]
         # pink 0.9, purple 0.8, blue 0.7-0.5, green 0.3-0.1, yello 0.16,
         self.N = self.ConvRgb(0, 0, 0)

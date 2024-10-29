@@ -28,18 +28,18 @@ class ScInit(ScBase):
         self.STATE_CHK_LAN_INTERFACE = 6
 
     def CheckHttpConnectivity(self):
-        print "-------------------------------"
+        print("-------------------------------")
         while HttpUtil.CheckConnectivity(self.pCTX.connectivityCheckUrl, 1,
                                          self.pCTX.httpsProxy) == False:
             time.sleep(1)
         self.workerRet = 3
-        print "-------------------------------"
+        print("-------------------------------")
         return
 
     def GetApiInfo(self):
         apiUrl = self.pCTX.infoApiUrl
         savePath = "/tmp/WanemApiInfo.json"
-        print "-------------------------------"
+        print("-------------------------------")
         while HttpUtil.Get(apiUrl, savePath, 1, self.pCTX.httpsProxy) == False:
             time.sleep(1)
         file = open(savePath)
@@ -48,13 +48,13 @@ class ScInit(ScBase):
         #pprint(dat)
         self.pCTX.apiStatus = dat["status"]["maintStatus"]
         self.workerRet = 3
-        print "-------------------------------"
+        print("-------------------------------")
         return
 
     def CheckWanemDat(self):
-        print "-------------------------------"
+        print("-------------------------------")
         cmd = "php /home/pi/EM-uNetPi/scripts/php/SyncDat.php"
-        print cmd
+        print(cmd)
         ret = False
 
         try:
@@ -65,15 +65,14 @@ class ScInit(ScBase):
             ret = False
             self.workerRet = 4
 
-        print str(ret)
-        print "-------------------------------"
+        print(str(ret))
+        print("-------------------------------")
         return
 
     def SetupAP(self):
-        print "-------------------------------"
-        cmd = "php /home/pi/EM-uNetPi/scripts/php/UpdateHostapdConf.php wanem-" + self.GetSelfId(
-        )
-        print cmd
+        print("-------------------------------")
+        cmd = "php /home/pi/EM-uNetPi/scripts/php/UpdateNetworkManagerConf.php wanem-" + self.GetSelfId()
+        print(cmd)
         ret = False
 
         try:
@@ -84,13 +83,13 @@ class ScInit(ScBase):
             ret = False
             self.workerRet = 4
 
-        print str(ret)
-        print "-------------------------------"
+        print(str(ret))
+        print("-------------------------------")
         return
 
     def CheckLanInterface(self):
-        print "-------------------------------"
-        cmd = "ifconfig eth2"
+        print("-------------------------------")
+        cmd = "ifconfig eth1"
         ret = False
 
         try:
@@ -103,13 +102,23 @@ class ScInit(ScBase):
             ret = True
             self.workerRet = 3
 
-        print str(ret)
-        print "-------------------------------"
+        print(str(ret))
+        print("-------------------------------")
         return
 
     def CheckWifiDongle(self):
-        print "-------------------------------"
-        cmd = "lsusb -d 0411:0242"
+        print("-------------------------------")
+
+        # Dummy Boot for Recognize WiFi Dongle
+        cmd = "php /home/pi/EM-uNetPi/scripts/php/UpdateNetworkManagerConf.php wanem-" + self.GetSelfId()
+
+        try:
+            subprocess.check_call(cmd.strip().split(" "))
+            ret = True
+        except subprocess.CalledProcessError:
+            ret = False
+
+        cmd = "lsusb -d 35bc:0108"
         ret = False
 
         try:
@@ -125,31 +134,13 @@ class ScInit(ScBase):
         cmd = "cat /etc/wanem/apmode.prop"
         try:
             currentApMode = int(
-                subprocess.check_output(cmd.strip().split(" ")).replace(
+                subprocess.check_output(cmd.strip().split(" ")).decode().replace(
                     '\n', ''))
         except subprocess.CalledProcessError:
             currentApMode = 0
 
-        # OverWrite to 2.4GHz Mode
-        if currentApMode == 1 and self.pCTX.wifiDongleExist == False:
-            cmd = "cp /etc/wanem/tpl/0.prop /etc/wanem/apmode.prop"
-            try:
-                subprocess.check_call(cmd.strip().split(" "))
-            except subprocess.CalledProcessError:
-                print("Update Ap Mode Fail")
-            cmd = "cp /etc/wanem/tpl/2.prop /etc/wanem/apchannel.prop"
-            try:
-                subprocess.check_call(cmd.strip().split(" "))
-            except subprocess.CalledProcessError:
-                print("Update Ap Channel Fail")
-            cmd = "cp /etc/wanem/tpl/raspi-blacklist-5.conf /etc/modprobe.d/raspi-blacklist.conf"
-            try:
-                subprocess.check_call(cmd.strip().split(" "))
-            except subprocess.CalledProcessError:
-                print("Update Module Blacklist Fail")
-
-        print "WifiDongle Exist : " + str(self.pCTX.wifiDongleExist)
-        print "-------------------------------"
+        print("WifiDongle Exist : " + str(self.pCTX.wifiDongleExist))
+        print("-------------------------------")
         return
 
     def Start(self):
@@ -200,7 +191,7 @@ class ScInit(ScBase):
             self.tickCnt = (self.tickCnt + 1) % self.tickDuration
 
         if self.state == self.STATE_CHK_NETWORK:
-            if self.worker.isAlive() == False:
+            if self.worker.is_alive() == False:
                 self.worker.join()
                 self.UpdateProgress(0, self.workerRet)
                 self.state = self.STATE_GET_INFO
@@ -213,7 +204,7 @@ class ScInit(ScBase):
                     self.UpdateProgress(0, self.tickCnt)
 
         elif self.state == self.STATE_GET_INFO:
-            if self.worker.isAlive() == False:
+            if self.worker.is_alive() == False:
                 self.worker.join()
                 self.UpdateProgress(1, self.workerRet)
                 self.state = self.STATE_CHK_WIFI_DONGLE
@@ -227,7 +218,7 @@ class ScInit(ScBase):
                     self.UpdateProgress(1, self.tickCnt)
 
         elif self.state == self.STATE_CHK_WIFI_DONGLE:
-            if self.worker.isAlive() == False:
+            if self.worker.is_alive() == False:
                 self.worker.join()
                 self.UpdateProgress(2, self.workerRet)
                 self.state = self.STATE_SETUP_AP
@@ -240,7 +231,7 @@ class ScInit(ScBase):
                     self.UpdateProgress(2, self.tickCnt)
 
         elif self.state == self.STATE_SETUP_AP:
-            if self.worker.isAlive() == False:
+            if self.worker.is_alive() == False:
                 self.worker.join()
                 self.UpdateProgress(3, self.workerRet)
                 self.state = self.STATE_CHK_LAN_INTERFACE
@@ -254,7 +245,7 @@ class ScInit(ScBase):
                     self.UpdateProgress(3, self.tickCnt)
 
         elif self.state == self.STATE_CHK_LAN_INTERFACE:
-            if self.worker.isAlive() == False:
+            if self.worker.is_alive() == False:
                 self.worker.join()
                 self.UpdateProgress(4, self.workerRet)
 
@@ -263,7 +254,7 @@ class ScInit(ScBase):
 
                 self.state = self.STATE_TERM
                 self.worker = None
-                print self.pCTX.lanMode
+                print(self.pCTX.lanMode)
             else:
                 if self.tickCnt != self.prevTickCnt:
                     self.UpdateProgress(4, self.tickCnt)

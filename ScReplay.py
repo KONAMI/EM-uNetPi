@@ -32,7 +32,7 @@ class ScReplay(ScBase):
                                    self.BtHandler))
 
     def BtHandler(self, key):
-        print "BtHandler" + key
+        print("BtHandler" + key)
         if key == "BtMenu":
             self.nextScene = "Menu"
             self.state = self.STATE_TERM
@@ -122,7 +122,7 @@ class ScReplay(ScBase):
         self.UpdateCategory(0, True)
 
     def LoadCategory(self):
-        print "LoadCategory"
+        print("LoadCategory")
         gidx = self.groupPageIdx * 5 + self.groupFocusIdx
         self.catList = os.listdir(self.pCTX.replayDataPath + "/" +
                                   self.groupList[gidx])
@@ -238,7 +238,7 @@ class ScReplay(ScBase):
         self.pRender.fb.putstr(388, 100 + 30 * 3 - 20, "%13s" % datMtime,
                                self.pRender.W, 1)
 
-        print targetPath
+        print(targetPath)
         self.pCTX.currentReplayData = targetPath
 
     def Start(self):

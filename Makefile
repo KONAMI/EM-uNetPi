@@ -1,3 +1,5 @@
+DEPLOY_TARGET = 192.168.31.67 
+
 default:
 
 prop:
@@ -9,10 +11,6 @@ prop:
 	echo "1" > /etc/wanem/tpl/1.prop
 	echo "2" > /etc/wanem/tpl/2.prop
 	echo "3" > /etc/wanem/tpl/3.prop
-	echo "blacklist brcmfmac" > /etc/wanem/tpl/raspi-blacklist-24.conf
-	echo "blacklist brcmutil" >> /etc/wanem/tpl/raspi-blacklist-24.conf
-	echo "blacklist rtl8812au" > /etc/wanem/tpl/raspi-blacklist-5.conf
-	sudo cp /etc/wanem/tpl/raspi-blacklist-5.conf /etc/modprobe.d/raspi-blacklist.conf
 	sudo cp misc/iptables/iptables.ipv4.nat.type2 /etc/
 	sudo cp misc/iptables/iptables.ipv4.nat.type3 /etc/
 	sudo cp /etc/iptables.ipv4.nat.type2 /etc/iptables.ipv4.nat
@@ -24,3 +22,6 @@ PYTHON_SCRIPTS ?= ${shell ls *.py}
 
 format:
 	yapf -i ${PYTHON_SCRIPTS}
+
+deploy:
+	rsync -avz ./ pi@192.168.31.67:EM-uNetPi/

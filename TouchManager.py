@@ -9,7 +9,7 @@ class TouchManager:
     def __init__(self, pScene):
         self.pScene = pScene
         #self.infile_path = "/dev/input/event" + (sys.argv[1] if len(sys.argv) > 1 else "0")
-        self.infile_path = "/dev/input/event0"
+        self.infile_path = "/dev/input/event1"
         self.FORMAT = 'llHHI'
         self.EVENT_SIZE = struct.calcsize(self.FORMAT)
         self.lastPtX = 0
@@ -27,15 +27,21 @@ class TouchManager:
 
         try:
             event = self.in_file.read(self.EVENT_SIZE)
-        except IOError, e:
+        except IOError as e:
             if e.errno == 11:
                 return False
 
+        if(event == None):
+            return False
+            
+        #print("Event : ")
+        #print(event)
+            
         (tv_sec, tv_usec, type, code,
          value) = struct.unpack(self.FORMAT, event)
 
         if type != 0 or code != 0 or value != 0:
-            #print("Event type %u, code %u, value %u at %d.%d" % (type, code, value, tv_sec, tv_usec))
+            print("Event type %u, code %u, value %u at %d.%d" % (type, code, value, tv_sec, tv_usec))
             # Events with code, type and value == 0 are "separator" events
             if code == 0:
                 self.lastPtX = int(value * self.rateX)

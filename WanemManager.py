@@ -35,7 +35,7 @@ class WanemManager:
         cmd = "cat /etc/wanem/wanemmode.prop"
         try:
             self.wanemMode = int(
-                subprocess.check_output(cmd.strip().split(" ")).replace(
+                subprocess.check_output(cmd.strip().split(" ")).decode().replace(
                     '\n', ''))
         except subprocess.CalledProcessError:
             self.wanemMode = 0
@@ -44,7 +44,7 @@ class WanemManager:
         self.isDualMode = 0
         self.upRootDevice = "eth0 root"
         self.dwRootDevice = "wlan0 root"
-        self.dw2RootDevice = "eth2 root"
+        self.dw2RootDevice = "eth1 root"
 
         cmd = "tc qdisc del dev " + self.upRootDevice
         subprocess.call(cmd.strip().split(" "))
@@ -73,7 +73,7 @@ class WanemManager:
         self.isDualMode = 1
         self.upRootDevice = "eth0 root"
         self.dwRootDevice = "wlan0 root"
-        self.dw2RootDevice = "eth2 root"
+        self.dw2RootDevice = "eth1 root"
         cmd = "tc qdisc del dev " + self.upRootDevice
         subprocess.call(cmd.strip().split(" "))
         cmd = "tc qdisc del dev " + self.dwRootDevice
@@ -84,10 +84,10 @@ class WanemManager:
 
         self.upRootDevice = "eth0 root handle 1:"
         self.dwRootDevice = "wlan0 root handle 2:"
-        self.dw2RootDevice = "eth2 root handle 3:"
+        self.dw2RootDevice = "eth1 root handle 3:"
         self.upChildDevice = "eth0 parent 1: handle 10:"
         self.dwChildDevice = "wlan0 parent 2: handle 20:"
-        self.dw2ChildDevice = "eth2 parent 3: handle 30:"
+        self.dw2ChildDevice = "eth1 parent 3: handle 30:"
         cmd = "tc qdisc add dev " + self.upRootDevice + " tbf " + self.speedValue[
             bandValueIdx]
         subprocess.call(cmd.strip().split(" "))
@@ -110,7 +110,7 @@ class WanemManager:
             subprocess.call(cmd.strip().split(" "))
 
     def EmuDisconnPush(self):
-        print "Push"
+        print("Push")
         self.disconnState = 2
         self.pRender.RenderDot(0, 6)
         self.Apply(False)
@@ -118,7 +118,7 @@ class WanemManager:
     def EmuDisconnRelease(self):
         if self.disconnState != 2:
             return
-        print "Release"
+        print("Release")
         self.pRender.RenderDot(0, 5)
         self.disconnState = 0
         self.Apply(False)
@@ -135,7 +135,7 @@ class WanemManager:
     # Call by Only ScManualEx2
     def EmuDisconnPushMini(self, upBand, dwBand, upDelay, dwDelay, upLoss,
                            dwLoss):
-        print "Push"
+        print("Push")
         self.disconnState = 2
         self.pRender.RenderDotMini(2, 6)
         self.DirectUpdateEx2(upBand, dwBand, upDelay, dwDelay, upLoss, dwLoss)
@@ -145,7 +145,7 @@ class WanemManager:
                               dwLoss):
         if self.disconnState != 2:
             return
-        print "Release"
+        print("Release")
         self.pRender.RenderDotMini(2, 5)
         self.disconnState = 0
         self.DirectUpdateEx2(upBand, dwBand, upDelay, dwDelay, upLoss, dwLoss)
@@ -240,7 +240,7 @@ class WanemManager:
             param = str(int(delay / 2))
             cmd = "tc qdisc change dev eth0 root netem delay " + param + "msec loss 0%"
             cmd2 = "tc qdisc change dev wlan0 root netem delay " + param + "msec loss 0%"
-            cmd3 = "tc qdisc change dev eth2 root netem delay " + param + "msec loss 0%"
+            cmd3 = "tc qdisc change dev eth1 root netem delay " + param + "msec loss 0%"
 
             subprocess.call(cmd.strip().split(" "))
             subprocess.call(cmd2.strip().split(" "))
@@ -248,7 +248,7 @@ class WanemManager:
         else:
             cmd = "tc qdisc change dev eth0 root netem loss 100%"
             cmd2 = "tc qdisc change dev wlan0 root netem loss 100%"
-            cmd3 = "tc qdisc change dev eth2 root netem loss 100%"
+            cmd3 = "tc qdisc change dev eth1 root netem loss 100%"
 
             subprocess.call(cmd.strip().split(" "))
             subprocess.call(cmd2.strip().split(" "))
@@ -257,7 +257,7 @@ class WanemManager:
     def ClearEx(self):
         self.upRootDevice = "eth0 root"
         self.dwRootDevice = "wlan0 root"
-        self.dw2RootDevice = "eth2 root"
+        self.dw2RootDevice = "eth1 root"
         cmd = "tc qdisc del dev " + self.upRootDevice
         subprocess.call(cmd.strip().split(" "))
         cmd = "tc qdisc del dev " + self.dwRootDevice
@@ -273,7 +273,7 @@ class WanemManager:
     def ClearEx2(self):
         self.upRootDevice = "eth0 root"
         self.dwRootDevice = "wlan0 root"
-        self.dw2RootDevice = "eth2 root"
+        self.dw2RootDevice = "eth1 root"
         cmd = "tc qdisc del dev " + self.upRootDevice
         subprocess.call(cmd.strip().split(" "))
         cmd = "tc qdisc del dev " + self.dwRootDevice
@@ -309,10 +309,10 @@ class WanemManager:
 
         self.upRootDevice = "eth0 root handle 1:"
         self.dwRootDevice = "wlan0 root handle 2:"
-        self.dw2RootDevice = "eth2 root handle 3:"
+        self.dw2RootDevice = "eth1 root handle 3:"
         self.upChildDevice = "eth0 parent 1: handle 10:"
         self.dwChildDevice = "wlan0 parent 2: handle 20:"
-        self.dw2ChildDevice = "eth2 parent 3: handle 30:"
+        self.dw2ChildDevice = "eth1 parent 3: handle 30:"
 
         if self.disconnState == 0:
             upLossStmt = " loss %d%%" % upLoss
@@ -355,10 +355,10 @@ class WanemManager:
 
         self.upRootDevice = "eth0 root handle 1:"
         self.dwRootDevice = "wlan0 root handle 2:"
-        self.dw2RootDevice = "eth2 root handle 3:"
+        self.dw2RootDevice = "eth1 root handle 3:"
         self.upChildDevice = "eth0 parent 1: handle 10:"
         self.dwChildDevice = "wlan0 parent 2: handle 20:"
-        self.dw2ChildDevice = "eth2 parent 3: handle 30:"
+        self.dw2ChildDevice = "eth1 parent 3: handle 30:"
         cmd = "tc qdisc add dev " + self.upRootDevice + " tbf " + speedUpValue
         subprocess.call(cmd.strip().split(" "))
         cmd = "tc qdisc add dev " + self.upChildDevice + " netem delay " + delayUpValue + " loss " + str(
@@ -396,10 +396,10 @@ class WanemManager:
 
         self.upRootDevice = "eth0 root handle 1:"
         self.dwRootDevice = "wlan0 root handle 2:"
-        self.dw2RootDevice = "eth2 root handle 3:"
+        self.dw2RootDevice = "eth1 root handle 3:"
         self.upChildDevice = "eth0 parent 1: handle 10:"
         self.dwChildDevice = "wlan0 parent 2: handle 20:"
-        self.dw2ChildDevice = "eth2 parent 3: handle 30:"
+        self.dw2ChildDevice = "eth1 parent 3: handle 30:"
         cmd = "tc qdisc change dev " + self.upRootDevice + " tbf " + speedUpValue
         subprocess.call(cmd.strip().split(" "))
         cmd = "tc qdisc change dev " + self.upChildDevice + " netem delay " + delayUpValue + " loss " + self.lossValue[
@@ -443,10 +443,10 @@ class WanemManager:
 
         self.upRootDevice = "eth0 root handle 1:"
         self.dwRootDevice = "wlan0 root handle 2:"
-        self.dw2RootDevice = "eth2 root handle 3:"
+        self.dw2RootDevice = "eth1 root handle 3:"
         self.upChildDevice = "eth0 parent 1: handle 10:"
         self.dwChildDevice = "wlan0 parent 2: handle 20:"
-        self.dw2ChildDevice = "eth2 parent 3: handle 30:"
+        self.dw2ChildDevice = "eth1 parent 3: handle 30:"
 
         if self.disconnState == 0:
             upLossStmt = " loss %d%%" % upLoss

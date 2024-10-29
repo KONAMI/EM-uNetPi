@@ -38,7 +38,7 @@ class ScManual(ScBase):
                                 self.BtHandler))
 
     def BtHandler(self, key):
-        print "BtHandler" + key
+        print("BtHandler" + key)
         if key == "BtMenu":
             self.pWanem.InitSingle()
             self.pWanem.Clear()

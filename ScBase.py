@@ -19,12 +19,12 @@ class ScBase(object):
         self.ptDef = []
 
     def TouchDownHandler(self, x, y):
-        print "TouchDownHandler Pos >> " + str(x) + " : " + str(y)
+        print("TouchDownHandler Pos >> " + str(x) + " : " + str(y))
         self.CallTouchFunc(x, y, True)
         return
 
     def TouchUpHandler(self, x, y):
-        print "TouchUpHandler Pos >> " + str(x) + " : " + str(y)
+        print("TouchUpHandler Pos >> " + str(x) + " : " + str(y))
         self.CallTouchFunc(x, y, False)
         return
 
@@ -106,11 +106,11 @@ class ScBase(object):
                         break
             f.close()
         except Exception as e:
-            print '=== EXCEPTION ==='
-            print 'type:' + str(type(e))
-            print 'args:' + str(e.args)
-            print 'message:' + e.message
-            print 'e:' + str(e)
+            print('=== EXCEPTION ===')
+            print('type:' + str(type(e)))
+            print('args:' + str(e.args))
+            print('message:' + e.message)
+            print('e:' + str(e))
             cpuserial = "00000000000ERROR"
 
         return cpuserial[10:16]

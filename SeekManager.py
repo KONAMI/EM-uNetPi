@@ -13,7 +13,7 @@ class SeekManager:
         self.progressBarResolution = progressBarResolution
         self.isRepeat = False
         self.isPause = False
-        self.laps = range(0, self.progressBarResolution)
+        self.laps = list(range(0, self.progressBarResolution))
         self.updateInterval = 1
 
         self.dps = 0

@@ -59,7 +59,7 @@ def pause(secs):
 
 def main(argv):
 
-    desc = u'{0} [Args] [Options]\nDetailed options -h or --help'.format(
+    desc = '{0} [Args] [Options]\nDetailed options -h or --help'.format(
         __file__)
     parser = ArgumentParser(description=desc)
     parser.add_argument('-debug', action='store_true', dest='debug')
@@ -79,6 +79,8 @@ def main(argv):
 
     pCTX = CTX()
     pCTX.httpsProxy = args.proxy
+    if pCTX.httpsProxy is None:
+    	pCTX.httpsProxy = ""
     pRender = RenderManager()
     #pRender.RenderBaseFrame()
     pWanem = WanemManager(pCTX, pRender)

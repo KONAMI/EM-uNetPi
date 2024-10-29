@@ -119,7 +119,7 @@ class ScManualEx(ScBase):
                                 26, self.BtHandler))
 
     def BtHandler(self, key):
-        print "BtHandler" + key
+        print("BtHandler" + key)
         if key == "BtMenu":
             self.pWanem.ClearEx()
             self.nextScene = "Menu"

@@ -15,7 +15,7 @@ class CTX:
         self.connectivityCheckUrl = "https://github.com"
         self.infoApiUrl = "https://raw.githubusercontent.com/KONAMI/EM-uNetPi/master/misc/api/ApiInfo.json"
         self.copyright = "Powered by Sato_Motohiko"
-        self.revision = "PLA-A-2018082001"
+        self.revision = "PLA-A-2024100801"
 
         #
         # Local Config ( Runtime Writeable )

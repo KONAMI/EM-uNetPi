@@ -16,7 +16,7 @@ class ScRemoteApi(ScBase):
         self.updateCnt = 60
 
     def BtHandler(self, key):
-        print "BtHandler" + key
+        print("BtHandler" + key)
         if key == "BtMenu":
             self.pWanem.Clear()
             self.nextScene = "Menu"
@@ -46,9 +46,9 @@ class ScRemoteApi(ScBase):
                         #self.pRender.UpdateSubTitle(rBuf.decode().strip())
                         resp = '{"status":"E_OK"}'.encode('utf-8')
                         self.sock.sendto(resp, peer)
-                    except socket.error, v:
+                    except socket.error as v:
                         errorcode = v[0]
-                        print("socket recv error. >> " + errorcode)
+                        print(("socket recv error. >> " + errorcode))
             self.updateCnt -= 1
             if self.updateCnt <= 0:
                 self.RenderTrafficInfo(True)
@@ -122,7 +122,7 @@ class ScRemoteApi(ScBase):
         self.RenderBackBt(True)
 
         self.CreateApiSocket()
-        ifreq = struct.pack('16s16x', 'eth1')
+        ifreq = struct.pack('16s16x', 'eth2'.encode())
         SIOCGIFADDR = 0x8915  # oh... not defined... orz
         ifaddr = ioctl(self.sock.fileno(), SIOCGIFADDR, ifreq)
         _, sa_family, port, in_addr = struct.unpack('16sHH4s8x', ifaddr)
@@ -216,15 +216,16 @@ class ScRemoteApi(ScBase):
             c = self.pRender.ConvRgb(0.0, 0.0, 0.0)
             self.pRender.fb.draw.rect(c, Rect(344, 120, 128, 18), 0)
 
-        cmd = "cat /proc/net/nf_conntrack"
+        #cmd = "cat /proc/net/nf_conntrack"
+        cmd = "conntrack -L"
         conntrack = subprocess.check_output(
             cmd.strip().split(" ")).splitlines()
-
+        
         for line in conntrack:
-            elm = map(str, line.split())
-            if elm[2] == 'tcp':
+            elm = list(map(str, line.decode().split()))
+            if elm[0] == 'tcp':
                 tcpNr += 1
-            if elm[2] == 'udp':
+            if elm[0] == 'udp':
                 udpNr += 1
 
         c = self.pRender.ConvRgb(0.1, 0.1, 0.9)

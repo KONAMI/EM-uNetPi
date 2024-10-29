@@ -29,7 +29,7 @@ class LogReporter:
         r = requests.post(pCTX.activityReportApiUrl,
                           headers=headers,
                           data=params)
-        print r.text
+        print(r.text)
         #data = r.json()
         #print json.dumps(data, indent=4)
 
@@ -52,7 +52,7 @@ class LogReporter:
         r = requests.post(pCTX.dhcpClientReportApiUrl,
                           headers=headers,
                           data=json.dumps(params))
-        print r.text
+        print(r.text)
         #print json.dumps(params)
 
 

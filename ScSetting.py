@@ -92,7 +92,7 @@ class ScSetting(ScBase):
                                 self.BtHandler, None, False))
 
     def BtHandler(self, key):
-        print "BtHandler" + key
+        print("BtHandler" + key)
         if key == "BtMenu":
             self.pWanem.Clear()
             self.nextScene = "Menu"
@@ -172,16 +172,6 @@ class ScSetting(ScBase):
                 print("Update Ap Mode Success")
             except subprocess.CalledProcessError:
                 print("Update Ap Mode Fail")
-
-            if self.currentApMode == 0:
-                cmd = "cp /etc/wanem/tpl/raspi-blacklist-5.conf /etc/modprobe.d/raspi-blacklist.conf"
-            else:
-                cmd = "cp /etc/wanem/tpl/raspi-blacklist-24.conf /etc/modprobe.d/raspi-blacklist.conf"
-            try:
-                subprocess.check_call(cmd.strip().split(" "))
-                print("Update Module Blacklist Success.")
-            except subprocess.CalledProcessError:
-                print("Update Module Blacklist Fail")
 
         return
 
@@ -415,7 +405,7 @@ class ScSetting(ScBase):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
         try:
-            ifreq = struct.pack('16s16x', 'eth0')
+            ifreq = struct.pack('16s16x', 'eth0'.encode())
             SIOCGIFADDR = 0x8915
             ifaddr = ioctl(sock.fileno(), SIOCGIFADDR, ifreq)
             _, sa_family, port, in_addr = struct.unpack('16sHH4s8x', ifaddr)
@@ -423,23 +413,24 @@ class ScSetting(ScBase):
         except IOError:
             wanIp = "0.0.0.0"
 
-        ifreq = struct.pack('16s16x', 'wlan0')
+        ifreq = struct.pack('16s16x', 'wlan0'.encode())
         SIOCGIFADDR = 0x8915
         ifaddr = ioctl(sock.fileno(), SIOCGIFADDR, ifreq)
         _, sa_family, port, in_addr = struct.unpack('16sHH4s8x', ifaddr)
         lanIp = socket.inet_ntoa(in_addr)
+#        lanIp = "0.0.0.0"
 
         if self.pCTX.lanMode == self.pCTX.LAN_MODE_HYBRID:
-            ifreq = struct.pack('16s16x', 'eth2')
+            ifreq = struct.pack('16s16x', 'eth1'.encode())
             SIOCGIFADDR = 0x8915
             ifaddr = ioctl(sock.fileno(), SIOCGIFADDR, ifreq)
             _, sa_family, port, in_addr = struct.unpack('16sHH4s8x', ifaddr)
             lan2Ip = socket.inet_ntoa(in_addr)
 
-        ifreq = struct.pack('256s', 'eth0')
+        ifreq = struct.pack('256s', 'eth0'.encode())
         SIOCGIFHWADDR = 0x8927
         ifaddr = ioctl(sock.fileno(), SIOCGIFHWADDR, ifreq)
-        hwaddr = ''.join(['%02x:' % ord(char) for char in ifaddr[18:24]])[:-1]
+        hwaddr = ''.join(['%02x:' % char for char in ifaddr[18:24]])[:-1]
 
         sock.close()
 
@@ -591,7 +582,7 @@ class ScSetting(ScBase):
             self.pRender.fb.putstr(220, 294, ' Now Reboot ', self.pRender.R, 2)
             subprocess.check_call(cmd.strip().split(" "))
         except subprocess.CalledProcessError:
-            print "Reboot Fail."
+            print("Reboot Fail.")
             self.pRender.fb.putstr(220, 294, ' Reboot Err ', self.pRender.R, 2)
 
     def Shutdown(self):
@@ -600,7 +591,7 @@ class ScSetting(ScBase):
             self.pRender.fb.putstr(220, 294, 'Now Shutdown', self.pRender.R, 2)
             subprocess.check_call(cmd.strip().split(" "))
         except subprocess.CalledProcessError:
-            print "Shutdown Fail."
+            print("Shutdown Fail.")
             self.pRender.fb.putstr(220, 294, 'Shutdown Err', self.pRender.R, 2)
 
     def RenderTab4(self):
@@ -709,11 +700,11 @@ class ScSetting(ScBase):
 
             f.close()
         except Exception as e:
-            print '=== EXCEPTION ==='
-            print 'type:' + str(type(e))
-            print 'args:' + str(e.args)
-            print 'message:' + e.message
-            print 'e:' + str(e)
+            print('=== EXCEPTION ===')
+            print('type:' + str(type(e)))
+            print('args:' + str(e.args))
+            print('message:' + e.message)
+            print('e:' + str(e))
 
     def Start(self):
         super(ScSetting, self).Start()
@@ -731,7 +722,7 @@ class ScSetting(ScBase):
         cmd = "cat /etc/wanem/wanemmode.prop"
         try:
             self.currentWanemMode = int(
-                subprocess.check_output(cmd.strip().split(" ")).replace(
+                subprocess.check_output(cmd.strip().split(" ")).decode().replace(
                     '\n', ''))
         except subprocess.CalledProcessError:
             self.currentWanemMode = 0
@@ -739,7 +730,7 @@ class ScSetting(ScBase):
         cmd = "cat /etc/wanem/apchannel.prop"
         try:
             self.currentChannel = int(
-                subprocess.check_output(cmd.strip().split(" ")).replace(
+                subprocess.check_output(cmd.strip().split(" ")).decode().replace(
                     '\n', ''))
         except subprocess.CalledProcessError:
             self.currentChannel = 1
@@ -747,7 +738,7 @@ class ScSetting(ScBase):
         cmd = "cat /etc/wanem/apmode.prop"
         try:
             self.currentApMode = int(
-                subprocess.check_output(cmd.strip().split(" ")).replace(
+                subprocess.check_output(cmd.strip().split(" ")).decode().replace(
                     '\n', ''))
         except subprocess.CalledProcessError:
             self.currentApMode = 0

@@ -6,14 +6,14 @@ class HttpUtil:
     def CheckConnectivity(host, retryLimit, proxy=""):
         proxyArg = ""
         if proxy != "":
-            proxyArg = "--proxy " + proxy
+            proxyArg = "--proxy " + str(proxy)
         cmd = "curl " + proxyArg + " -s -m 5 -o /dev/null " + host + "?" + str(
             random.random())
         ret = False
         retryCnt = 0
         while ret == False:
             try:
-                #print("HttpCheck >> " + cmd);
+                print("HttpCheck >> " + cmd);
                 subprocess.check_call(cmd.strip().split(" "))
                 ret = True
             except subprocess.CalledProcessError:
@@ -28,8 +28,10 @@ class HttpUtil:
     def Get(url, savePath, retryLimit, proxy=""):
         proxyArg = ""
         if proxy != "":
-            proxyArg = "--proxy " + proxy
-        cmd = "curl " + proxyArg + " -s -m 5 -o " + savePath + " " + url
+            proxyArg = "--proxy " + str(proxy)
+#        cmd = "curl " + proxyArg + " -s -m 5 -o " + savePath + " " + url
+        cmd = "wget " + url + " -O " + savePath + " --timeout=5"
+        print("Get >> " + cmd);
         ret = False
         retryCnt = 0
         while ret == False:
