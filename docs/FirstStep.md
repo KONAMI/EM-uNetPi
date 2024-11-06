@@ -10,17 +10,18 @@ EM-uNetPi 利用ガイド
 このツールを使用するには二つの方法があります。
 
 - 1. 完成イメージをreleaseタブから取得しSDカードに焼き、組み立てた完成ハードに刺す
-- 2. [こちらのビルド手順](ManualBuild.md) を参考に素のRaspbianから構築する。
+- 2. [こちらのビルド手順](ManualBuild.md) を参考に素の Raspberry Pi OS から構築する。
 
-特にこだわりがない場合、前者を奨励します。また、パーツに関しては[こちら](PartsList.md)を参考に一式揃えてください。
+特にこだわりがない場合、前者を奨励します。また、パーツに関しては [こちら](PartsList.md) を参考に一式揃えてください。
 
 ハードウェアの組立方法
 --------------------------------------------------------------------------------------------------
 
 USB機器は差し込み、タッチパネルはGPIOのピンに沿って刺すだけです。
 
-![](img/Setup01.jpg)
-![](img/Setup02.jpg)
+<img src="img/Setup01.jpg" style="zoom:25%;" /><img src="img/Setup02.jpg" style="zoom:25%;" />
+
+> USB機器の接続ポートは次の項目に従ってください。適当に刺すと、うまく認識しない可能性があります。
 
 接続方法
 --------------------------------------------------------------------------------------------------
@@ -29,11 +30,13 @@ USB機器は差し込み、タッチパネルはGPIOのピンに沿って刺す�
 
 クライアントは、有線/無線いずれでも接続が可能です。
 
-![](img/PortMap.jpg)
+<img src="img/PortMap.jpg" style="zoom:50%;" />
 
-> 注1: 図解する際に紛らわしかったので抜いていますが、実際には、空いているポートに5GHz向けのWiFiアダプタが刺さります。
-
-> 注2: クライアント接続用ポートと管理ポートは、RaspberryPi 3B/3B+ の違いやロットの違いで、逆になる可能性があります。接続して、DHCPによるIP払い出しがされる方が、クライアント接続用ポートになります。
+> 以前の Raspberry 3 向けの配線とは、LAN / 管理ポートが逆位置になっているので、注意してください。
+>
+> 組み立ての項目にも書いた通り、刺すポートを間違えるとデバイスをうまく認識しないことがあります。
+>
+> 認識に失敗している場合、起動画面でエラーとなり、起動に失敗します。
 
 起動方法
 --------------------------------------------------------------------------------------------------
@@ -81,6 +84,7 @@ Setting
 諸々設定の変更ができます。一部設定は変更後、rebootしないと反映されないため注意
 
 - APの2.4GHz/5GHz設定切替
+- IPv6モードの切替
 - NAPTモードのSymmetric切替
 - 帯域シミュレーション時のパケット制御方式（Policing/Shaping）切替
 
@@ -92,53 +96,6 @@ Setting
 完成イメージで動作しているものに対して、sshログインしたい場合、<br />
 デフォルトで下記のアドレス/ユーザ設定で、管理ポートからログインできます。
 
-- 管理ポートアドレス： 192.168.31.10
+- 管理ポートアドレス： 192.168.31.67
 - ユーザ：user
 - パスワード：password
-
-### Proxy環境での動作について
-
-起動そのものは、HTTPS Proxy を設定することで可能になります。
-
-起動時の引数として与えれば、HTTPS Proxyを使用するモードになるので、<br />
-下記、ファイルを修正した上で、再起動してください。
-
-なお、必要に応じて、配下のクライアントのProxy設定等も必要になります。
-
-#### /home/pi/.bash_profile
-
-proxyオプションを追加して、Https Proxy Server を指定する。
-
-```
-sudo python EM-uNetPi/Wanem.py -proxy <[protocol://][user@password]proxyhost[:port]>
-```
-
-#### /etc/dhcp/dhcpd.conf
-
-クライアントに配布するDNS Serverがデフォルトのままではダメな場合は、こちらのファイルも要修正。
-
-```
-subnet 192.168.20.0 netmask 255.255.255.0 {
-authoritative;
-option routers 192.168.20.1;
-option broadcast-address 192.168.20.255;
-option subnet-mask 255.255.255.0;
-option domain-name "EM-NetPi";
-option domain-name-servers <Your Primary DNS>,<Your Secondary DNS>;
-default-lease-time 600;
-max-lease-time 7200;
-range 192.168.20.101 192.168.20.254;
-}
-
-subnet 192.168.21.0 netmask 255.255.255.0 {
-authoritative;
-option routers 192.168.21.1;
-option broadcast-address 192.168.21.255;
-option subnet-mask 255.255.255.0;
-option domain-name "EM-NetPi";
-option domain-name-servers <Your Primary DNS>,<Your Secondary DNS>;
-default-lease-time 600;
-max-lease-time 7200;
-range 192.168.21.101 192.168.21.254;
-}
-```

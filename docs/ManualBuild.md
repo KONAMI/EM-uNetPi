@@ -113,9 +113,19 @@ $ sudo apt-get install libssl-dev
 $ sudo apt-get install conntrack 
 $ sudo apt-get install iptables
 $ sudo apt-get install iptables-persistent 
+$ sudo apt-get install radvd
+$ sudo apt-get install radvdump
 ```
 
 iptablesのあたりで現在のルールを保存するか訊かれますが、任意で答えて問題ありません。
+
+radvd は自動起動設定が有効にされてしまうのは厄介なので
+
+```bash
+$ sudo systemctl disable radvd
+```
+
+として、自動起動を無効化しておいてください。
 
 ### リポジトリからソースの取得・必要なリソース生成
 
@@ -244,6 +254,8 @@ LAN側のポートの設定をする
 ```bash
 $ sudo nmcli connection modify "Wired connection 2" ipv4.addresses "192.168.20.1/24"
 $ sudo nmcli connection modify "Wired connection 2" ipv4.method manual
+$ sudo nmcli connection modify "Wired connection 2" ipv6.addresses "fd00:c0a8:1401::1"
+$ sudo nmcli connection modify "Wired connection 2" ipv6.method manual
 $ sudo nmcli connection up "Wired connection 2"
 ```
 
@@ -268,7 +280,7 @@ $ sudo systemctl restart NetworkManager
 SSID・パスワード含む細かい設定は、EM-uNetPiのメインプロセス設定後、起動時に自動上書きされるので、今は気にしなくてよいです。
 
 ```bash
-$ sudo nmcli connection add type wifi ifname wlan0 con-name rpi_ap autoconnect yes ssid wanem-xxxxxx 802-11-wireless.mode ap 802-11-wireless.band a 802-11-wireless.channel 48 ipv4.method shared ipv4.address 192.168.21.1/24 wifi-sec.key-mgmt wpa-psk wifi-sec.pairwise ccmp wifi-sec.proto rsn wifi-sec.psk "wanem-xxxxxx"
+$ sudo nmcli connection add type wifi ifname wlan0 con-name rpi_ap autoconnect yes ssid wanem-xxxxxx 802-11-wireless.mode ap 802-11-wireless.band a 802-11-wireless.channel 48 ipv4.method shared ipv4.address 192.168.21.1/24 ipv6.method shared ipv6.address fd00:c0a8:1501::1/128 wifi-sec.key-mgmt wpa-psk wifi-sec.pairwise ccmp wifi-sec.proto rsn wifi-sec.psk "wanem-xxxxxx"
 $ sudo nmcli connection up rpi_ap
 $ sudo nmcli connection modify rpi_ap autoconnect yes
 ```
@@ -290,7 +302,7 @@ $ sudo php IPv6Switcher.php 1
 
 この切り替えは、EM-uNetPi起動後にタッチパネルからの操作（Setting）からでも行うことが出来ます。
 
-### NAT等の設定
+### NAT等の設定（IPv4）
 
 #### DHCPサーバの設定
 
@@ -349,6 +361,64 @@ $ sudo systemctl start isc-dhcp-server.service
 ```
 # net.ipv4.ip_forward=1
 # net.ipv6.conf.all.forwarding=1
+```
+
+### NAT等の設定（IPv6）※ experimental
+
+NAT66の設定を行います。
+
+必要な追加設定を行いますが、起動後に「Settings > IP/NAT」の IPv6 Mode を NAT66 にしない限り有効にはなりません。
+
+NAT66実装に関しては、こちらの [実装に至った経緯](NAT66Info.md) も併せて参照ください。
+
+#### アドレス設計について
+
+/64 環境での利用を想定しているため、ULAの fd00::/8 空間を使用します。
+
+一部プラットフォーム/アプリケーションでは、ULAを用いたNAT66環境下で、IPv6通信がうまく行えない可能性があるので、ご留意ください。
+
+#### radvd の設定
+
+コンフィグファイルを /etc/radvd.conf として、下記の通り定義します。
+
+```
+interface eth1 {
+
+    AdvSendAdvert on;
+    MinRtrAdvInterval 3;
+    MaxRtrAdvInterval 10;
+    AdvDefaultPreference high;
+
+    prefix fd00:c0a8:1401::/64
+    {
+        AdvOnLink on;
+        AdvAutonomous on;
+        AdvRouterAddr off;
+    };
+
+    RDNSS 2001:4860:4860::8888 2001:4860:4860::8844 {
+        AdvRDNSSLifetime 3600;
+    };
+};
+
+interface wlan0 {
+
+    AdvSendAdvert on;
+    MinRtrAdvInterval 3;
+    MaxRtrAdvInterval 10;
+    AdvDefaultPreference high;
+
+    prefix fd00:c0a8:1501::/64
+    {
+        AdvOnLink on;
+        AdvAutonomous on;
+        AdvRouterAddr off;
+    };
+
+    RDNSS 2001:4860:4860::8888 2001:4860:4860::8844 {
+        AdvRDNSSLifetime 3600;
+    };
+};
 ```
 
 ### その他の設定
