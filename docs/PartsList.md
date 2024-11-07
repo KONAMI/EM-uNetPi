@@ -23,7 +23,7 @@ EM-uNetPiのハードウェアは下記のパーツを組み立てることで�
 >
 > これだと、ケースによってはそこがつっかえてうまく入らないことがある。そのため、そういう基盤を引いてしまった場合は膨らんでいる部分をヤスリなどで削ってください。
 
-<img src="/System/Volumes/Data/share/EM-uNetPi5/docs/img/RpiBari1.jpg" style="zoom:50%;" /><img src="/System/Volumes/Data/share/EM-uNetPi5/docs/img/RpiBari2.jpg" alt="RpiBari2" style="zoom:50%;" />
+<img src="img/RpiBari1.jpg" style="zoom:50%;" /><img src="img/RpiBari2.jpg" alt="RpiBari2" style="zoom:50%;" />
 
 #### タッチパネル
 
@@ -72,14 +72,14 @@ EM-uNetPiのハードウェアは下記のパーツを組み立てることで�
 
 #### 本体ケース
 
-<img src="/System/Volumes/Data/share/EM-uNetPi5/docs/img/CaseImage.png" alt="CaseImage" style="zoom:33%;" />
+<img src="img/CaseImage.png" alt="CaseImage" style="zoom:33%;" />
 
 - ファン付きで、GPIOにアクセスでき、タッチパネルを取り付けられるような形状のものであれば任意のもので可
   - Raspberry Pi 5 の発熱量の都合上、ファンなしでの運用は非奨励
 
 #### GPIO エクステンダー：連結ピンソケット 2×20(40P) ラズパイ用スタッキングコネクタ
 
-<img src="/System/Volumes/Data/share/EM-uNetPi5/docs/img/Parts03.png" alt="Parts03" style="zoom:33%;" />
+<img src="img/Parts03.png" alt="Parts03" style="zoom:33%;" />
 
 - ファン付きケースを用いる場合、高さの問題でタッチパネルがそのままでは刺さらないことが多い。そのため、スタッキングコネクタ等をつかって持ち上げてあげる必要がある。一般的な Raspiberry Pi 用のパーツなので、任意で探してください。
 
@@ -108,7 +108,7 @@ EM-uNetPiのハードウェアは下記のパーツを組み立てることで�
 
 #### キャリングケース（任意）
 
-<img src="/System/Volumes/Data/share/EM-uNetPi5/docs/img/CarryImage.jpg" alt="CarryImage" style="zoom:33%;" />
+<img src="img/CarryImage.jpg" alt="CarryImage" style="zoom:33%;" />
 
 - メーカー：SANWA SUPPLY
 

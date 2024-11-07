@@ -26,7 +26,7 @@ IPv6が利用可能な環境（適切にRAが降ってくる環境）に接続�
 
 現在IPv6モードかどうかは「Setting > SYSTEM」に表示されるIP情報から確認可能です。IPv6 有効時には各種IP情報が下図のようにIPv4/IPv6で併記されます。（起動時の初期化画面で、IPv6 ENV CHECK の項目がOKになるかどうかでも判定できます。）
 
-<img src="/System/Volumes/Data/share/EM-uNetPi5/docs/img/SampleIPv6Setting.jpg" alt="SampleIPv6Setting" style="zoom:33%;" />
+<img src="img/SampleIPv6Setting.jpg" alt="SampleIPv6Setting" style="zoom:33%;" />
 
 > NAT、NAT/Symmetric の 2モードが存在しますが、いづれもNAT66モードになります。後者はNAPTのMapping挙動がいわゆるシンメトリック挙動になるという違いあります。
 
