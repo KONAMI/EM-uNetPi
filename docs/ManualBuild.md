@@ -254,8 +254,8 @@ LAN側のポートの設定をする
 ```bash
 $ sudo nmcli connection modify "Wired connection 2" ipv4.addresses "192.168.20.1/24"
 $ sudo nmcli connection modify "Wired connection 2" ipv4.method manual
-$ sudo nmcli connection modify "Wired connection 2" ipv6.addresses "fd00:c0a8:1401::1"
-$ sudo nmcli connection modify "Wired connection 2" ipv6.method manual
+$ sudo nmcli connection modify "Wired connection 2" ipv6.address fd00:c0a8:1401::1/64
+$ sudo nmcli connection modify "Wired connection 2" ipv6.method shared
 $ sudo nmcli connection up "Wired connection 2"
 ```
 
@@ -280,7 +280,7 @@ $ sudo systemctl restart NetworkManager
 SSID・パスワード含む細かい設定は、EM-uNetPiのメインプロセス設定後、起動時に自動上書きされるので、今は気にしなくてよいです。
 
 ```bash
-$ sudo nmcli connection add type wifi ifname wlan0 con-name rpi_ap autoconnect yes ssid wanem-xxxxxx 802-11-wireless.mode ap 802-11-wireless.band a 802-11-wireless.channel 48 ipv4.method shared ipv4.address 192.168.21.1/24 ipv6.method shared ipv6.address fd00:c0a8:1501::1/128 wifi-sec.key-mgmt wpa-psk wifi-sec.pairwise ccmp wifi-sec.proto rsn wifi-sec.psk "wanem-xxxxxx"
+$ sudo nmcli connection add type wifi ifname wlan0 con-name rpi_ap autoconnect yes ssid wanem-xxxxxx 802-11-wireless.mode ap 802-11-wireless.band a 802-11-wireless.channel 48 ipv4.method shared ipv4.address 192.168.21.1/24 ipv6.method shared ipv6.address fd00:c0a8:1501::1/64 wifi-sec.key-mgmt wpa-psk wifi-sec.pairwise ccmp wifi-sec.proto rsn wifi-sec.psk "wanem-xxxxxx"
 $ sudo nmcli connection up rpi_ap
 $ sudo nmcli connection modify rpi_ap autoconnect yes
 ```
