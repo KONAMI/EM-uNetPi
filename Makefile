@@ -13,7 +13,11 @@ prop:
 	echo "3" > /etc/wanem/tpl/3.prop
 	sudo cp misc/iptables/iptables.ipv4.nat.type2 /etc/
 	sudo cp misc/iptables/iptables.ipv4.nat.type3 /etc/
+	sudo cp misc/iptables/iptables.ipv6.nat.type0 /etc/
+	sudo cp misc/iptables/iptables.ipv6.nat.type2 /etc/
+	sudo cp misc/iptables/iptables.ipv6.nat.type3 /etc/
 	sudo cp /etc/iptables.ipv4.nat.type2 /etc/iptables.ipv4.nat
+	sudo cp /etc/iptables.ipv6.nat.type0 /etc/iptables.ipv6.nat
 
 #########################################################################################
 
