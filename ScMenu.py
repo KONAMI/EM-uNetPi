@@ -51,9 +51,9 @@ class ScMenu(ScBase):
         elif key == "BtSetting":
             self.nextScene = "Setting"
             self.state = self.STATE_TERM
-        elif key == "BtInit":
-            self.nextScene = "Init"
-            self.state = self.STATE_TERM
+        #elif key == "BtInit":
+            #self.nextScene = "Init"
+            #self.state = self.STATE_TERM
         elif key == "BtRemote":
             self.nextScene = "RemoteApi"
             self.state = self.STATE_TERM
@@ -68,7 +68,7 @@ class ScMenu(ScBase):
         c = yellow = self.pRender.fb.rgb(255, 255, 0)
         self.pRender.fb.draw.rect(c, Rect(0, 54, self.pRender.xres, 1), 0)
 
-        self.RenderBackBt(True)
+        #self.RenderBackBt(True)
 
         c = self.pRender.ConvRgb(0.62, 0.4, 1.0)
         self.pRender.fb.draw.rect(c, Rect(48, 90, 180, 200), 0)

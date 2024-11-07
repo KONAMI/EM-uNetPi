@@ -51,7 +51,8 @@ if($mode == 0){
         . "" . "\n"
         . "[ipv6]" . "\n"
         . "addr-gen-mode=default" . "\n"
-        . "method=auto" . "\n"
+        . "address1=fd00:c0a8:1501::1/64" . "\n"
+        . "method=shared" . "\n"
         . "" . "\n"
         . "[proxy]" . "\n"
         . "" . "\n";    
@@ -91,7 +92,8 @@ else {
         . "" . "\n"
         . "[ipv6]" . "\n"
         . "addr-gen-mode=default" . "\n"
-        . "method=auto" . "\n"
+        . "address1=fd00:c0a8:1501::1/64" . "\n"
+        . "method=shared" . "\n"
         . "" . "\n"
         . "[proxy]" . "\n"
         . "" . "\n";        
@@ -102,7 +104,5 @@ file_put_contents($confPath, $confDat);
 exec("nmcli connection down rpi_ap");
 sleep(3); // serviceコマンドが非同期なので、適当に寝て待つ
 exec("nmcli connection up rpi_ap");
-sleep(10); // 10じゃ足りないかも...
-sleep(10); // 10じゃ足りないかも...
 
 ?>

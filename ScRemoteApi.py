@@ -124,11 +124,24 @@ class ScRemoteApi(ScBase):
         self.CreateApiSocket()
         ifreq = struct.pack('16s16x', 'eth2'.encode())
         SIOCGIFADDR = 0x8915  # oh... not defined... orz
-        ifaddr = ioctl(self.sock.fileno(), SIOCGIFADDR, ifreq)
-        _, sa_family, port, in_addr = struct.unpack('16sHH4s8x', ifaddr)
-        #print socket.inet_ntoa(in_addr)
+
+        retryLimit = 1
+        retryCnt = 0
+        while retryCnt <= retryLimit:
+            try:
+                ifaddr = ioctl(self.sock.fileno(), SIOCGIFADDR, ifreq)
+                _, sa_family, port, in_addr = struct.unpack('16sHH4s8x', ifaddr)
+                #print socket.inet_ntoa(in_addr)
+                lanIp = socket.inet_ntoa(in_addr)
+                break
+            except:
+                if retryCnt == 0:
+                    subprocess.check_call(['nmcli', 'connection', 'up', 'Wired connection 3'])
+                lanIp = "0.0.0.0"
+                retryCnt += 1
+            
         self.pRender.UpdateSubTitle("API Endpoint >> " +
-                                    socket.inet_ntoa(in_addr) + ":" +
+                                    lanIp + ":" +
                                     str(self.bindPort))
 
         self.RenderParamBar(0, 0, "Band", self.upBand, self.dwBand, "kbps")
