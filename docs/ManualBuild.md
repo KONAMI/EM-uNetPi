@@ -136,6 +136,9 @@ $ cd /home/pi
 $ git clone https://github.com/KONAMI/EM-uNetPi.git
 $ cd EM-uNetPi
 $ git submodule update --init --recursive
+$ cd fbtft
+$ patch -u  < ../misc/patch/fbtft_python3.patch 
+$ cd ../
 $ sudo make setup
 ```
 
