@@ -139,7 +139,7 @@ $ git submodule update --init --recursive
 $ cd fbtft
 $ patch -u  < ../misc/patch/fbtft_python3.patch 
 $ cd ../
-$ sudo make setup
+$ sudo make prop
 ```
 
 ###  各種デバイス・ドライバのセットアップ
@@ -161,7 +161,7 @@ $ sudo cp waveshare35a.dtbo /boot/overlays/
 
 最後に
 
-/boot/firmware/config.txt の dtparam=spi=on の次あたりに
+/boot/firmware/config.txt の dtparam=spi=on の次の行あたりに
 
 ```
 dtoverlay=waveshare35a:rotate=90,swapxy=1 
@@ -189,7 +189,7 @@ $ hexdump /dev/input/event1
 
 まずは、オンボードの無線LANデバイスを無効化します。
 
-/etc/modprobe.d/raspi-blacklist.conf　に下記を追記して再起動すると無効化されます。
+/etc/modprobe.d/raspi-blacklist.conf に下記を追記して再起動すると無効化されます。
 
 ```
 blacklist brcmfmac
@@ -210,8 +210,14 @@ $ ip addr
 git clone https://github.com/morrownr/rtl8852bu.git
 cd rtl8852bu
 make
-make install
+sudo make install
 ```
+
+##### デバイスの接続
+
+__ここまで作業を進めたら、有線LANアダプタと無線LANアダプタを本体に接続する。__
+
+これより前に繋いでいると、Raspberry Pi OS 自体がそもそも起動しない事がある。
 
 再起動後に
 
@@ -220,6 +226,10 @@ $ ip addr
 ```
 
 と打って、wlan0のインターフェースが現れていればOK。
+
+> Raspberry Pi OS と ドライバの問題で、起動直後にUSBデバイスの認識がされるまでにそれなりに時間がかかる事がある。
+>
+> 再起動直後に認識されない場合、数分待ってからあらためて確認することを奨励。
 
 ### Networkの設定
 
