@@ -51,7 +51,7 @@ class V6Util:
     @staticmethod    
     def GetGua():
     
-        cmd = "ifconfig en11"
+        cmd = "ip addr show dev eth0"
         ret = []
 
         try:
