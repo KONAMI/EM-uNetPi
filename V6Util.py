@@ -21,7 +21,7 @@ class V6Util:
     @staticmethod
     def IsV6Enabled():
     
-        cmd = "ifconfig en11"
+        cmd = "ip addr show dev eth0"
         v6Stat = -1
 
         try:
