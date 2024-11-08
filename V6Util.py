@@ -46,7 +46,7 @@ class V6Util:
             print(cmd + " >> Error")
             v6Stat = -1
 
-            return True if v6Stat == 1 else False
+        return True if v6Stat == 1 else False
 
     @staticmethod    
     def GetGua():
