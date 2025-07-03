@@ -1,0 +1,36 @@
+diff --git a/stuncore/messagehandler.cpp b/stuncore/messagehandler.cpp
+index 42124e7..bfb77d0 100644
+--- a/stuncore/messagehandler.cpp
++++ b/stuncore/messagehandler.cpp
+@@ -330,6 +330,8 @@ HRESULT CStunRequestHandler::ProcessBindingRequest()
+     
+     builder.AddMappedAddress(_pMsgIn->addrRemote);
+ 
++    /*
++    // bypass attributes. for short packet building.
+     if (fSendOriginAddress)
+     {
+         builder.AddResponseOriginAddress(addrOrigin); // pass true to send back SOURCE_ADDRESS, otherwise, pass false to send back RESPONSE-ORIGIN
+@@ -342,7 +344,7 @@ HRESULT CStunRequestHandler::ProcessBindingRequest()
+ 
+     // send back the XOR-MAPPED-ADDRESS (encoded as an optional message for legacy clients)
+     builder.AddXorMappedAddress(_pMsgIn->addrRemote);
+-    
++    */
+     
+     // finally - if we're supposed to have a message integrity attribute as a result of authorization, add it at the very end
+     if (_integrity.fSendWithIntegrity)
+@@ -357,6 +359,13 @@ HRESULT CStunRequestHandler::ProcessBindingRequest()
+         }
+     }
+ 
++    // Echo back padding attribute.
++    // Adjust packet size by the size of the attribute to be added.
++    if(fRequestHasPaddingAttribute == true){
++      uint16_t appendSize = paddingSize - (_pMsgIn->addrRemote.GetIPLength()) - 8;
++      builder.AddPaddingAttribute(appendSize);
++    }
++  
+     builder.FixLengthField();
+ 
+     return S_OK;
