@@ -1,0 +1,69 @@
+diff --git a/stuncore/stunreader.cpp b/stuncore/stunreader.cpp
+index adbe66b..f820d5e 100644
+--- a/stuncore/stunreader.cpp
++++ b/stuncore/stunreader.cpp
+@@ -153,7 +153,7 @@ HRESULT CStunMessageReader::ValidateMessageIntegrity(uint8_t* key, size_t keylen
+     uint8_t hmaccomputed[c_hmacsize] = {}; // zero-init
+     unsigned int hmaclength = c_hmacsize;
+ #ifndef __APPLE__
+-    HMAC_CTX ctx = {};
++    HMAC_CTX *ctx = NULL;
+ #else
+     CCHmacContext ctx = {};
+     UNREFERENCED_VARIABLE(hmaclength);
+@@ -195,8 +195,8 @@ HRESULT CStunMessageReader::ValidateMessageIntegrity(uint8_t* key, size_t keylen
+     
+     // Here comes the fun part.  If there is a fingerprint attribute, we have to adjust the length header in computing the hash
+ #ifndef __APPLE__
+-    HMAC_CTX_init(&ctx);
+-    HMAC_Init(&ctx, key, keylength, EVP_sha1());
++    ctx = HMAC_CTX_new();
++    HMAC_Init(ctx, key, keylength, EVP_sha1());
+ #else
+     CCHmacInit(&ctx, kCCHmacAlgSHA1, key, keylength);
+ #endif
+@@ -205,7 +205,7 @@ HRESULT CStunMessageReader::ValidateMessageIntegrity(uint8_t* key, size_t keylen
+     // message type
+     Chk(stream.ReadUint16(&chunk16));
+ #ifndef __APPLE__
+-    HMAC_Update(&ctx, (unsigned char*)&chunk16, sizeof(chunk16));
++    HMAC_Update(ctx, (unsigned char*)&chunk16, sizeof(chunk16));
+ #else
+     CCHmacUpdate(&ctx, &chunk16, sizeof(chunk16));
+ #endif
+@@ -225,7 +225,7 @@ HRESULT CStunMessageReader::ValidateMessageIntegrity(uint8_t* key, size_t keylen
+     }
+     
+ #ifndef __APPLE__
+-    HMAC_Update(&ctx, (unsigned char*)&chunk16, sizeof(chunk16));
++    HMAC_Update(ctx, (unsigned char*)&chunk16, sizeof(chunk16));
+ #else
+     CCHmacUpdate(&ctx, &chunk16, sizeof(chunk16));
+ #endif
+@@ -243,14 +243,14 @@ HRESULT CStunMessageReader::ValidateMessageIntegrity(uint8_t* key, size_t keylen
+     {
+         Chk(stream.ReadUint32(&chunk32));
+ #ifndef __APPLE__
+-        HMAC_Update(&ctx, (unsigned char*)&chunk32, sizeof(chunk32));
++        HMAC_Update(ctx, (unsigned char*)&chunk32, sizeof(chunk32));
+ #else
+         CCHmacUpdate(&ctx, &chunk32, sizeof(chunk32));
+ #endif
+     }
+     
+ #ifndef __APPLE__
+-    HMAC_Final(&ctx, hmaccomputed, &hmaclength);
++    HMAC_Final(ctx, hmaccomputed, &hmaclength);
+ #else
+     CCHmacFinal(&ctx, hmaccomputed);
+ #endif
+@@ -265,7 +265,8 @@ Cleanup:
+     if (fContextInit)
+     {
+ #ifndef __APPLE__
+-        HMAC_CTX_cleanup(&ctx);
++        HMAC_CTX_reset(ctx);
++        HMAC_CTX_free(ctx);
+ #else
+         UNREFERENCED_VARIABLE(fContextInit);
+ #endif
