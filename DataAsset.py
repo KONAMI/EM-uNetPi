@@ -8,6 +8,7 @@ class CTX:
         self.debug = False
         self.currentReplayData = ""
         self.httpsProxy = ""
+        
         #
         # Local Config
         #
@@ -18,6 +19,14 @@ class CTX:
         self.revision = "PLA-A-2024110701"
         self.lanV6Addr = "fd00:c0a8:1401::1"
         self.wlanV6Addr = "fd00:c0a8:1501::1"
+        
+        #
+        # Metrics Motnitor Config
+        #
+        self.metricsServer = ""
+        self.metricsRecvTimeoutMsec = 2000
+        self.metricsProcessCycleSec = 300
+        self.metricsProcessBinPath  = "/home/pi/EM-uNetPi/tools/StunTool.bin"
         
         #
         # Local Config ( Runtime Writeable )

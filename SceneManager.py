@@ -11,6 +11,7 @@ from ScReplay import ScReplay
 from ScPlayback import ScPlayback
 from ScSetting import ScSetting
 from ScRemoteApi import ScRemoteApi
+from ScMetricsMon import ScMetricsMon
 from DataAsset import CTX
 
 
@@ -27,6 +28,7 @@ class SceneManager:
         self.pScManual = ScManual(self.pCTX, self.pRender, self.pWanem)
         self.pScManualEx = ScManualEx(self.pCTX, self.pRender, self.pWanem)
         self.pScManualEx2 = ScManualEx2(self.pCTX, self.pRender, self.pWanem)
+        self.pScMetricsMon = ScMetricsMon(self.pCTX, self.pRender, self.pWanem)
         self.pScReplay = ScReplay(self.pCTX, self.pRender, self.pWanem)
         self.pScPlayback = ScPlayback(self.pCTX, self.pRender, self.pWanem)
         self.pScSetting = ScSetting(self.pCTX, self.pRender, self.pWanem)
@@ -74,6 +76,8 @@ class SceneManager:
             self.m_currentScene = self.pScSetting
         elif nextScene == "RemoteApi":
             self.m_currentScene = self.pScRemoteApi
+        elif nextScene == "MetricsMon":
+            self.m_currentScene = self.pScMetricsMon
         else:
             self.m_currentScene = self.pScMenu  # default
 

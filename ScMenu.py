@@ -10,29 +10,24 @@ from DataAsset import CTX
 class ScMenu(ScBase):
     def __init__(self, pCTX, pRender, pWanem):
         super(ScMenu, self).__init__(pCTX, pRender, pWanem)
-        #self.ptDef.insert(0, self.CreateTocuhDef("BtManual", 434,      132, 180, 132, self.BtHandler))
         self.ptDef.insert(
             0, self.CreateTocuhDef("BtPreset", 429, 210, 81, 81,
                                    self.BtHandler))
         self.ptDef.insert(
             1, self.CreateTocuhDef("BtDirect", 348, 210, 81, 81,
                                    self.BtHandler))
-        #self.ptDef.insert(2, self.CreateTocuhDef("BtReplay", 434-204,  95, 180, 132, self.BtHandler))
-        if self.pCTX.apiStatus == 0:
-            self.ptDef.insert(
-                2,
-                self.CreateTocuhDef("BtReplay", 434 - 204, 95, 180, 50,
-                                    self.BtHandler))
         self.ptDef.insert(
-            3, self.CreateTocuhDef("BtInit", 468, 29, 62, 42, self.BtHandler))
+            2, self.CreateTocuhDef("BtPlugin", 230, 95, 180, 50,
+                                   self.BtHandler))
         self.ptDef.insert(
-            4,
-            self.CreateTocuhDef("BtSetting", 434 - 204, 233, 180, 50,
-                                self.BtHandler))
+            3, self.CreateTocuhDef("BtInit", 468, 29, 62, 42,
+                                   self.BtHandler))
         self.ptDef.insert(
-            5,
-            self.CreateTocuhDef("BtRemote", 434 - 204, 164, 180, 50,
-                                self.BtHandler))
+            4, self.CreateTocuhDef("BtSetting", 230, 233, 180, 50,
+                                   self.BtHandler))
+        self.ptDef.insert(
+            5, self.CreateTocuhDef("BtRemote", 230, 164, 180, 50,
+                                   self.BtHandler))
 
     def BtHandler(self, key):
         #print "BtHandler" + key
@@ -45,9 +40,10 @@ class ScMenu(ScBase):
         elif key == "BtDirect":
             self.nextScene = "ManualEx2"
             self.state = self.STATE_TERM
-        elif key == "BtReplay":
-            self.nextScene = "Replay"
-            self.state = self.STATE_TERM
+        elif key == "BtPlugin":
+            if self.pCTX.metricsServer != "":
+                self.nextScene = "MetricsMon"
+                self.state = self.STATE_TERM                
         elif key == "BtSetting":
             self.nextScene = "Setting"
             self.state = self.STATE_TERM
@@ -95,15 +91,15 @@ class ScMenu(ScBase):
 
         baseX = 48 + 204
         baseY = 120 - 30
-        if self.pCTX.apiStatus == 0:
-            disabledDiff = 0
-            menuLabel = "Replay Mode"
-            menuLabelPosXOffset = 0
-        else:
-            disabledDiff = 0.5
-            menuLabel = "N/A"
-            menuLabelPosXOffset = 48
 
+        if self.pCTX.metricsServer == "":                
+            disabledDiff = 0.6
+        else:
+            disabledDiff = 0
+                
+        menuLabel = "Metrics Mon"
+        menuLabelPosXOffset = 0
+            
         c = self.pRender.ConvRgb(0.92, 0.8, 0.8 - disabledDiff)
         self.pRender.fb.draw.rect(c, Rect(baseX, baseY, 180, 50), 0)
         c = self.pRender.ConvRgb(0.92, 0.4, 0.4 - disabledDiff / 2)
@@ -113,9 +109,9 @@ class ScMenu(ScBase):
         self.pRender.fb.putstr(baseX + 22 + menuLabelPosXOffset, baseY + 7,
                                menuLabel, c, 2)
         c = self.pRender.ConvRgb(0.92, 0.2, 1.0 - disabledDiff)
-        self.pRender.fb.putstr(baseX + 22 + 3 - 10, baseY + 34,
-                               "Reproduce by recorded DAT", c, 1)
-
+        self.pRender.fb.putstr(baseX + 22 + 8 - 10, baseY + 34,
+                               "Realtime Quality Monitor", c, 1)
+            
         baseX = 48 + 204
         baseY = 120 - 30 + 70
         baseC = 0.12
