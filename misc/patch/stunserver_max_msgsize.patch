@@ -1,0 +1,15 @@
+diff --git a/stuncore/stuntypes.h b/stuncore/stuntypes.h
+index 7c73c9b..97eef7a 100644
+--- a/stuncore/stuntypes.h
++++ b/stuncore/stuntypes.h
+@@ -175,8 +175,8 @@ const uint16_t STUN_XOR_PORT_COOKIE = 0x2112;
+ 
+ const uint32_t STUN_HEADER_SIZE = 20;
+ 
+-const uint32_t MAX_STUN_MESSAGE_SIZE = 800; // some reasonable length
+-const uint32_t MAX_STUN_ATTRIBUTE_SIZE = 780; // more than reasonable
++const uint32_t MAX_STUN_MESSAGE_SIZE = 1500; // some reasonable length
++const uint32_t MAX_STUN_ATTRIBUTE_SIZE = 1480; // more than reasonable
+ 
+ 
+ #endif
