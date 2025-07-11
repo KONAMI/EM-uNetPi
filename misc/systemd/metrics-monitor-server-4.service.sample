@@ -1,0 +1,11 @@
+[Unit]
+Description=StunServer for MetricsMonitor (IPv4)
+After=network.target
+
+[Service]
+ExecStart   = /usr/local/bin/stunserver --family 4
+Type        = simple
+Restart     = always
+
+[Install]
+WantedBy    = multi-user.target
