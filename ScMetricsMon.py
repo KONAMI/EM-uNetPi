@@ -7,6 +7,7 @@ from gfx import Rect
 from DataAsset import CTX
 from MetricsCollector import MetricsCollector
 from MetricsGraph import MetricsGraph
+from CaptureTool import CaptureTool
 from V6Util import V6Util
 
 class ScMetricsMon(ScBase):
@@ -87,7 +88,11 @@ class ScMetricsMon(ScBase):
             19,
             self.CreateTocuhDef("ToggleGraphAf", 465, 269, 60, 24,
                                 self.BtHandler))
-
+        self.ptDef.insert(
+            20,
+            self.CreateTocuhDef("Capture", 128, 29, 94, 42,
+                                self.BtHandler))        
+        
     def TestAddressFamilyControl(self, v4Enabled, v6Enabled):
         if self.isApply != 0:
             return            
@@ -161,7 +166,9 @@ class ScMetricsMon(ScBase):
         elif key == "ToggleGraphAf":
             if (self.testV4Enabled == True) and (self.testV6Enabled == True):
                 self.metricsGraph.ToggleGraphAf()
-
+        elif key == "Capture":
+            self.captureTool.BtHandler()
+            
     def UpdateDwParam(self, delta):
         if self.isApply != 0:
             return
@@ -516,6 +523,9 @@ class ScMetricsMon(ScBase):
 
         self.metricsGraph = MetricsGraph(self.pRender, self.graphLen)
         self.metricsGraph.RenderGraphBase()
+
+        self.captureTool = CaptureTool(self.pRender, 0, 0)
+        self.captureTool.RenderBt()
         
         return
 
@@ -679,7 +689,7 @@ class ScMetricsMon(ScBase):
         else:
             c = self.pRender.N
         self.pRender.fb.draw.rect(c, Rect(338+4, 284+10, 6, 6), 0)
-    
+        
     def RenderApplyBt(self):
         if self.isApply == 0:
             c = self.pRender.ConvRgb(0.18, 0.6, 0.6)
