@@ -1,0 +1,13 @@
+[Unit]
+Description=EM-uNetPi MCP Server
+After=network.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/EM-uNetPi5/mcp
+ExecStart=/home/pi/.local/bin/uv run server.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

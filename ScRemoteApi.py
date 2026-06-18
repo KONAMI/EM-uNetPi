@@ -42,9 +42,12 @@ class ScRemoteApi(ScBase):
                 if s == self.sock:
                     try:
                         rBuf, peer = self.sock.recvfrom(self.rBufSize)
-                        self.ApplyApiCall(rBuf.decode().strip())
+                        respObj = {}
+                        self.ApplyApiCall(rBuf.decode().strip(), respObj)
                         #self.pRender.UpdateSubTitle(rBuf.decode().strip())
-                        resp = '{"status":"E_OK"}'.encode('utf-8')
+                        respObj["status"] = "E_OK"
+                        #resp = '{"status":"E_OK"}'.encode('utf-8')
+                        resp = json.dumps(respObj, ensure_ascii=False).encode('utf-8')
                         self.sock.sendto(resp, peer)
                     except socket.error as v:
                         errorcode = v[0]
@@ -55,7 +58,7 @@ class ScRemoteApi(ScBase):
                 self.updateCnt = 60
         return
 
-    def ApplyApiCall(self, query):
+    def ApplyApiCall(self, query, respObj = None):
         isUpdateBand = 0
         isUpdateDelay = 0
         isUpdateLoss = 0
@@ -64,15 +67,48 @@ class ScRemoteApi(ScBase):
         #todo aplly diff Update
         #print ("ApplyApiCall >> " + query)
         req = json.loads(query)
-        self.upBand = req["bandUp"]
-        self.dwBand = req["bandDw"]
-        self.upDelay = req["delayUp"]
-        self.dwDelay = req["delayDw"]
-        self.upLoss = req["lossUp"]
-        self.dwLoss = req["lossDw"]
-        self.upDiscon = req["disconnUp"]
-        self.dwDiscon = req["disconnDw"]
 
+        # Alive-check-packet only have "action" param.
+        # For backward compatibility, missing "action" defaults to "set".
+        action = "set"
+        if "action" in req:
+            action = req["action"]
+
+        if action == "get":
+            if respObj is None:                
+                return
+            
+            respObj["bandUp"] = self.upBand
+            respObj["bandDw"] = self.dwBand
+            respObj["delayUp"] = self.upDelay
+            respObj["delayDw"] = self.dwDelay
+            respObj["lossUp"] = self.upLoss
+            respObj["lossDw"] = self.dwLoss
+            respObj["disconnUp"] = self.upDiscon
+            respObj["disconnDw"] = self.dwDiscon
+
+            return
+        else:
+            # TODO Validate
+            self.upBand = req["bandUp"]
+            self.dwBand = req["bandDw"]
+            self.upDelay = req["delayUp"]
+            self.dwDelay = req["delayDw"]
+            self.upLoss = req["lossUp"]
+            self.dwLoss = req["lossDw"]
+            self.upDiscon = req["disconnUp"]
+            self.dwDiscon = req["disconnDw"]
+
+            # Redundant, but reassigning because the value may have changed after validation.
+            respObj["bandUp"] = self.upBand
+            respObj["bandDw"] = self.dwBand
+            respObj["delayUp"] = self.upDelay
+            respObj["delayDw"] = self.dwDelay
+            respObj["lossUp"] = self.upLoss
+            respObj["lossDw"] = self.dwLoss
+            respObj["disconnUp"] = self.upDiscon
+            respObj["disconnDw"] = self.dwDiscon
+            
         upLoss = self.upLoss
         dwLoss = self.dwLoss
 
@@ -107,7 +143,7 @@ class ScRemoteApi(ScBase):
 
         ##[ RENDER ]################################################################
 
-        self.pRender.UpdateTitle("WAN Emulation - API Control")
+        self.pRender.UpdateTitle("WAN Emulation - MCP Control")
         self.pRender.UpdateSubTitle("")
 
         c = yellow = self.pRender.fb.rgb(255, 255, 0)
@@ -140,9 +176,11 @@ class ScRemoteApi(ScBase):
                 lanIp = "0.0.0.0"
                 retryCnt += 1
             
-        self.pRender.UpdateSubTitle("API Endpoint >> " +
-                                    lanIp + ":" +
-                                    str(self.bindPort))
+        #self.pRender.UpdateSubTitle("API Endpoint >> " +
+        #                            lanIp + ":" +
+        #                            str(self.bindPort))
+        self.pRender.UpdateSubTitle("MCP URL >> http://" +
+                                    lanIp + ":10394/mcp")
 
         self.RenderParamBar(0, 0, "Band", self.upBand, self.dwBand, "kbps")
         self.RenderParamBar(1, 0, "Delay", self.upDelay, self.dwDelay, "msec")
