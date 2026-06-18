@@ -434,6 +434,70 @@ interface wlan0 {
 };
 ```
 
+### 特定のモード向けのツールインストール・設定
+
+#### 「Metrics Mon」モード向け
+
+メトリクス結果の画像保存でffmpeg, imagemagickを使用するので、インストールする。
+
+```bash
+$ sudo apt-get install ffmpeg
+$ sudo apt-get install imagemagick
+```
+
+「Metrics Mon」モード中以外の任意のタイミングでスクリーンショットを撮りたい場合や、自動保存先のファイルクリアについては、[こちらのドキュメントを参照](ScreenShot.md])
+
+#### 「MCP」モード向け
+
+> この構築はpiユーザで行ってください。
+
+FastMCPで動作させるため、まずUVのセットアップを行います。
+
+```bash
+$ curl -LsSf https://astral.sh/uv/install.sh | sh
+$ exec $SHELL
+```
+
+そうしたら、FastMCPを導入します
+
+```bash
+$ cd ~/EM-uNetPi/mcp/
+$ uv init
+$ uv add fastmcp
+```
+
+適当に実行して問題がないことが確認できたら、systemdの設定を行い、起動を確認します。
+
+```bash
+$ sudo cp ~/EM-uNetPi/mcp/systemd/em-unetpi-mcp.service.sample /etc/systemd/user/em-unetpi-mcp.service
+$ sudo systemctl daemon-reload
+$ sudo systemctl enable --now em-unetpi-mcp
+$ sudo systemctl status mcp-pi
+```
+
+##### 参考：AIエージェント側の設定ファイル（opencode.jsonc）
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "raspberry-pi": {
+      "type": "remote",
+      "url": "http://192.168.31.67:8000/mcp",
+      "enabled": true,
+      "oauth": false
+    }
+  }
+}
+
+```
+
+### タイムゾーン設定（任意）
+
+```bash
+$ sudo timedatectl set-timezone Asia/Tokyo
+```
+
 ### その他の設定
 
 #### 起動画面設定
@@ -481,3 +545,4 @@ $ sudo python EM-uNetPi/Wanem.py 1>/dev/null 2>/dev/null
 最後にリブートをして、タッチパネルに操作コンソールが表示されれば構築完了。
 
 > キーボード等を接続している場合、リブート前に抜いてください。
+
