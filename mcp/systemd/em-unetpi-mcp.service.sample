@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 User=pi
-WorkingDirectory=/home/pi/EM-uNetPi5/mcp
+WorkingDirectory=/home/pi/EM-uNetPi/mcp
 ExecStart=/home/pi/.local/bin/uv run server.py
 Restart=always
 RestartSec=5
