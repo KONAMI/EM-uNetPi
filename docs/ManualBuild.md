@@ -445,11 +445,13 @@ $ sudo apt-get install ffmpeg
 $ sudo apt-get install imagemagick
 ```
 
-「Metrics Mon」モード中以外の任意のタイミングでスクリーンショットを撮りたい場合や、自動保存先のファイルクリアについては、[こちらのドキュメントを参照](ScreenShot.md])
+「Metrics Mon」モード中以外の任意のタイミングでスクリーンショットを撮りたい場合は [こちらのドキュメントを参照](ScreenShot.md])。
 
 #### 「MCP」モード向け
 
 > この構築はpiユーザで行ってください。
+>
+> 古い環境からのアップデートの場合、Pythonが古くFastMCPが入らない可能性があるので、必要に応じてPythonを更新してください。
 
 FastMCPで動作させるため、まずUVのセットアップを行います。
 
@@ -462,17 +464,23 @@ $ exec $SHELL
 
 ```bash
 $ cd ~/EM-uNetPi/mcp/
-$ uv init
+$ uv init --name em-unetpi-mcp
 $ uv add fastmcp
 ```
 
-適当に実行して問題がないことが確認できたら、systemdの設定を行い、起動を確認します。
+一応下記のように、実行して動作が問題がないか確認します。
 
 ```bash
-$ sudo cp ~/EM-uNetPi/mcp/systemd/em-unetpi-mcp.service.sample /etc/systemd/user/em-unetpi-mcp.service
+$ uv run server.py 
+```
+
+systemdの設定を行い、起動を確認します。
+
+```bash
+$ sudo cp ~/EM-uNetPi/mcp/systemd/em-unetpi-mcp.service.sample /etc/systemd/system/em-unetpi-mcp.service
 $ sudo systemctl daemon-reload
 $ sudo systemctl enable --now em-unetpi-mcp
-$ sudo systemctl status mcp-pi
+$ sudo systemctl status em-unetpi-mcp
 ```
 
 ##### 参考：AIエージェント側の設定ファイル（opencode.jsonc）
