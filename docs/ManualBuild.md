@@ -16,9 +16,7 @@ Raspberry Pi の初期設定
 
 ハードウェアのパーツを揃えたら、以下の動画にしたがって、組み立てます。
 
-#### 動画
-
-// TBD
+[（参考）組み立て動画](https://github.com/KONAMI/EM-uNetPi/releases/download/v2.0.1/AssemblyTutorial.mp4)
 
 #### USBポートへの接続について
 
