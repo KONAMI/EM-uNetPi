@@ -23,7 +23,7 @@ class RenderManager:
         self.Clear()
         print("# %-30s [ %s ]" % ("Renderer Initialize", "OK"))
         self.laneState = [-1, -1, -1]
-        # pink 0.9, purple 0.8, blue 0.7-0.5, green 0.3-0.1, yello 0.16,
+        # pink 0.9, purple 0.8, blue 0.7-0.5, green 0.3-0.1, yellow 0.16,
         self.N = self.ConvRgb(0, 0, 0)
         self.W = self.ConvRgb(1, 0, 1)
         self.D = self.ConvRgb(1, 0, 0.2)
