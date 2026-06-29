@@ -124,7 +124,7 @@ class ScMenu(ScBase):
         self.pRender.fb.putstr(baseX + 22 + 20, baseY + 7, "API Mode", c, 2)
         c = self.pRender.ConvRgb(baseC, 0.2, 1.0)
         self.pRender.fb.putstr(baseX + 22 + 3 - 10 + 5, baseY + 34,
-                               "Contorl from Remote CLI", c, 1)
+                               "Control from Remote CLI", c, 1)
 
         c = self.pRender.ConvRgb(0.32, 0.4, 0.8)
         self.pRender.fb.draw.rect(c, Rect(48 + 204, 120 + 110, 180, 50), 0)
